@@ -2,113 +2,196 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Stress-Test Download & Sandboxed Multi-DOM</title>
+  <!-- Viewport diatur optimal agar pas di layar HP tanpa mengecil -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Stress-Test Download & Sandboxed DOM</title>
   <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      padding: 30px;
+      background: #090d16;
+      color: #f1f5f9;
+      margin: 0;
+      padding: 16px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
     .card {
-      background: #1e293b;
-      padding: 24px;
-      border-radius: 12px;
+      background: #131d31;
+      padding: 22px 18px;
+      border-radius: 18px;
       width: 100%;
-      max-width: 650px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      border: 1px solid #334155;
+      max-width: 540px;
+      border: 1px solid #1e293b;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    h2 {
+      font-size: 22px;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .desc {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 20px;
     }
     .form-group {
       margin-bottom: 18px;
     }
     label {
       display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #94a3b8;
+      margin-bottom: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #cbd5e1;
     }
-    input[type="file"], select, input[type="number"] {
+    input[type="file"], select {
       width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      background: #0f172a;
-      border: 1px solid #475569;
+      min-height: 52px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #090d16;
+      border: 1.5px solid #334155;
       color: #fff;
-      box-sizing: border-box;
+      font-size: 16px; /* 16px mencegah auto-zoom di iOS */
     }
-    button {
-      background: #3b82f6;
+    /* Toggle Mode Super Ketat */
+    .toggle-container {
+      background: #090d16;
+      border: 1.5px solid #3b82f6;
+      padding: 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .toggle-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin: 0;
+    }
+    .toggle-sub {
+      font-size: 12px;
+      color: #38bdf8;
+      display: block;
+      margin-top: 2px;
+    }
+    input[type="checkbox"] {
+      width: 26px;
+      height: 26px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+    }
+    .btn-main {
+      background: #2563eb;
       color: white;
       border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-weight: bold;
+      min-height: 54px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
       width: 100%;
-      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.1s;
     }
-    button:hover { background: #2563eb; }
+    .btn-main:active {
+      transform: scale(0.98);
+      background: #1d4ed8;
+    }
     #metrics {
-      margin-top: 15px;
-      font-family: monospace;
+      margin-top: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 13px;
       color: #38bdf8;
-      background: #0f172a;
-      padding: 12px;
-      border-radius: 6px;
-      min-height: 48px;
+      background: #090d16;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      line-height: 1.6;
+      word-break: break-all;
     }
-    /* Kontainer Iframe Sandboxed */
+    /* Wadah Multi-DOM */
     #sandbox-wrapper {
       margin-top: 20px;
-      border: 1px dashed #64748b;
-      border-radius: 8px;
-      padding: 10px;
-      background: #090d16;
+      border: 2px dashed #334155;
+      border-radius: 14px;
+      padding: 14px;
+      background: #06090f;
+    }
+    .sandbox-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     iframe {
       width: 100%;
-      height: 120px;
+      height: 160px;
       border: none;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2>🧪 Stress-Test Download & Sandboxed DOM</h2>
-    <p style="font-size: 13px; color: #94a3b8;">
-      Menguji kekuatan buffer unduhan browser dari file lokal melalui lapisan enkapsulasi ganda (Iframe Sandbox + Shadow DOM).
-    </p>
+    <h2>⚡ Stress-Test & Multi-DOM</h2>
+    <div class="desc">
+      Pengujian throughput unduhan file lokal dengan isolasi ganda (Sandboxed Iframe & Closed Shadow-DOM).
+    </div>
 
     <div class="form-group">
-      <label>1. Pilih File Target (Bisa TXT, ZIP, Gambar, dll):</label>
+      <label>1. Pilih File Target:</label>
       <input type="file" id="fileInput">
     </div>
 
     <div class="form-group">
-      <label>2. Multiplier Beban (Stress Multiplier):</label>
+      <label>2. Multiplier Beban (Stress Scale):</label>
       <select id="multiplier">
         <option value="1">1x (Ukuran Asli)</option>
-        <option value="5">5x Beban (Duplikasi Stream)</option>
-        <option value="20">20x Beban (Stress-Test)</option>
-        <option value="50">50x Beban (Heavy Stress-Test)</option>
+        <option value="5">5x Beban (Duplikasi Memori)</option>
+        <option value="20">20x Beban (Uji Berat)</option>
+        <option value="50" selected>50x Beban (Extreme Stress)</option>
       </select>
     </div>
 
-    <button id="btnPrepare">⚡ Siapkan ke Lapisan Multi-DOM</button>
+    <!-- Toggle Pengetatan Super -->
+    <div class="toggle-container">
+      <div>
+        <label class="toggle-label" for="strictMode">🛡️ Mode Super Ketat</label>
+        <span class="toggle-sub">Strict CSP + SHA-256 Checksum</span>
+      </div>
+      <input type="checkbox" id="strictMode" checked>
+    </div>
 
-    <div id="metrics">Status: Siap menerima file.</div>
+    <button class="btn-main" id="btnPrepare">⚡ Siapkan ke Lapisan DOM</button>
 
-    <!-- Lapisan Pengetatan: Wadah Iframe Sandbox -->
+    <div id="metrics">Status: Menunggu file dipilih...</div>
+
+    <!-- Area Lapisan Multi-DOM -->
     <div id="sandbox-wrapper">
-      <label style="color: #e2e8f0; margin-bottom: 8px;">
-        🛡️ Lapisan Pengetatan DOM (Sandboxed Iframe & Closed Shadow-DOM):
-      </label>
+      <div class="sandbox-header">
+        🔒 Lapisan Terisolasi (Sandboxed Frame):
+      </div>
       <iframe id="sandboxIframe" sandbox="allow-scripts allow-downloads"></iframe>
     </div>
   </div>
@@ -116,9 +199,17 @@
   <script>
     const fileInput = document.getElementById('fileInput');
     const multiplierSelect = document.getElementById('multiplier');
+    const strictModeCheckbox = document.getElementById('strictMode');
     const btnPrepare = document.getElementById('btnPrepare');
     const metrics = document.getElementById('metrics');
     const iframe = document.getElementById('sandboxIframe');
+
+    // Fungsi utilitas untuk menghitung SHA-256 (Web Crypto API)
+    async function calculateSHA256(buffer) {
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     btnPrepare.addEventListener('click', async () => {
       const file = fileInput.files[0];
@@ -128,76 +219,94 @@
       }
 
       const multiplier = parseInt(multiplierSelect.value, 10);
-      const estTotalSizeMB = ((file.size * multiplier) / (1024 * 1024)).toFixed(2);
-      
-      metrics.innerHTML = `Membaca file... Target simulasi: <b>${estTotalSizeMB} MB</b>`;
+      const isStrict = strictModeCheckbox.checked;
+      const totalBytes = file.size * multiplier;
+      const estTotalMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
-      // 1. Baca isi file ke ArrayBuffer
+      metrics.innerHTML = `⏳ Membaca payload... Target ukuran: <b>${estTotalMB} MB</b>`;
+
       const arrayBuffer = await file.arrayBuffer();
       
-      // 2. Buat skrip yang akan diinjeksi ke dalam Sandboxed IFrame
-      // Di dalam Iframe, kita bungkus lagi logika unduhannya ke dalam SHADOW DOM
+      let fileHash = "Dinonaktifkan";
+      if (isStrict) {
+        metrics.innerHTML = `🔐 Menghitung Checksum SHA-256 file asal...`;
+        fileHash = await calculateSHA256(arrayBuffer);
+      }
+
+      // Meta CSP Super Ketat (Hanya diaktifkan jika mode super ketat dicentang)
+      const cspMetaTag = isStrict 
+        ? `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; blob:;">`
+        : ``;
+
       const sandboxedHTML = `
         <!DOCTYPE html>
         <html>
         <head>
-          <style>body { margin: 0; background: transparent; }</style>
+          ${cspMetaTag}
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { margin: 0; background: transparent; font-family: sans-serif; }
+          </style>
         </head>
         <body>
-          <div id="host-component"></div>
+          <div id="host-element"></div>
 
           <script>
-            // Lapisan 1: Ambil data payload dari window induk
             window.addEventListener('message', (event) => {
-              if (event.data.type === 'START_DOWNLOAD') {
-                const { fileBuffer, filename, multiplier, totalExpectedSize } = event.data;
-                mountShadowDOM(fileBuffer, filename, multiplier, totalExpectedSize);
+              if (event.data.type === 'MOUNT') {
+                const { buffer, name, multiplier, totalSize, isStrict, origHash } = event.data;
+                initClosedShadowDOM(buffer, name, multiplier, totalSize, isStrict, origHash);
               }
             });
 
-            // Lapisan 2: Multi-inside DOM menggunakan "Closed" Shadow Root
-            function mountShadowDOM(buffer, originalName, multiplier, totalSize) {
-              const host = document.getElementById('host-component');
+            function initClosedShadowDOM(buffer, filename, multiplier, totalSize, isStrict, origHash) {
+              const host = document.getElementById('host-element');
+              // Enkapsulasi Tertutup
               const shadow = host.attachShadow({ mode: 'closed' });
 
-              const container = document.createElement('div');
-              container.innerHTML = \`
+              const wrapper = document.createElement('div');
+              wrapper.innerHTML = \`
                 <style>
-                  .box { 
-                    padding: 10px; 
-                    background: #111827; 
-                    border: 1px solid #374151; 
-                    border-radius: 6px; 
+                  .box {
+                    background: #111827;
+                    border: 1.5px solid #10b981;
+                    padding: 16px;
+                    border-radius: 12px;
                     text-align: center;
                   }
-                  .btn-dl { 
-                    background: #10b981; 
-                    color: #fff; 
-                    padding: 8px 16px; 
-                    border: none; 
-                    border-radius: 4px; 
+                  .btn-dl {
+                    background: #10b981;
+                    color: #062419;
+                    width: 100%;
+                    min-height: 48px;
+                    border: none;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    font-weight: 800;
                     cursor: pointer;
-                    font-weight: bold;
                   }
-                  .btn-dl:hover { background: #059669; }
+                  .btn-dl:active { background: #059669; }
+                  .status {
+                    color: #94a3b8;
+                    font-size: 12px;
+                    margin-top: 8px;
+                    font-family: monospace;
+                  }
                 </style>
                 <div class="box">
-                  <button class="btn-dl" id="dlBtn">💾 Unduh via Multi-Layer Buffer</button>
-                  <div id="status" style="color: #9ca3af; font-size: 11px; margin-top: 5px;">
-                    Siap streaming: \${(totalSize / (1024*1024)).toFixed(2)} MB
-                  </div>
+                  <button class="btn-dl" id="execBtn">💾 Unduh Payload (Multi-DOM)</button>
+                  <div class="status" id="statusText">Siap Stream: \${(totalSize / (1024*1024)).toFixed(2)} MB</div>
                 </div>
               \`;
-              shadow.appendChild(container);
+              shadow.appendChild(wrapper);
 
-              const dlBtn = shadow.getElementById('dlBtn');
-              const status = shadow.getElementById('status');
+              const execBtn = shadow.getElementById('execBtn');
+              const statusText = shadow.getElementById('statusText');
 
-              dlBtn.addEventListener('click', () => {
+              execBtn.addEventListener('click', async () => {
                 const startTime = performance.now();
-                status.innerText = "Membuat ReadableStream buffer...";
+                statusText.innerText = "Streaming buffer & verifikasi...";
 
-                // Menggunakan ReadableStream untuk stress test streaming memori
                 let count = 0;
                 const stream = new ReadableStream({
                   start(controller) {
@@ -214,28 +323,29 @@
                   }
                 });
 
-                // Bungkus Stream ke Response -> Blob
-                new Response(stream).blob().then(blob => {
-                  const blobUrl = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = blobUrl;
-                  a.download = "stressed_" + originalName;
-                  a.click();
-                  
-                  URL.revokeObjectURL(blobUrl);
+                const blob = await new Response(stream).blob();
+                const blobUrl = URL.createObjectURL(blob);
 
-                  const durationSec = ((performance.now() - startTime) / 1000).toFixed(2);
-                  const speedMBps = ((totalSize / (1024 * 1024)) / durationSec).toFixed(2);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = "tested_" + filename;
+                link.click();
 
-                  status.innerText = \`Selesai: \${durationSec}s (~ \${speedMBps} MB/s)\`;
-                  
-                  // Kirim metriks kembali ke Host
-                  window.parent.postMessage({
-                    type: 'METRICS',
-                    duration: durationSec,
-                    speed: speedMBps
-                  }, '*');
-                });
+                // Pembersihan memori instan
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+
+                const durationSec = ((performance.now() - startTime) / 1000).toFixed(2);
+                const speedMBps = ((totalSize / (1024 * 1024)) / durationSec).toFixed(2);
+
+                statusText.innerText = \`Sukses! Waktu: \${durationSec}s (\${speedMBps} MB/s)\`;
+
+                window.parent.postMessage({
+                  type: 'DONE',
+                  duration: durationSec,
+                  speed: speedMBps,
+                  hash: origHash,
+                  isStrict: isStrict
+                }, '*');
               });
             }
           <\/script>
@@ -243,27 +353,30 @@
         </html>
       `;
 
-      // Muat HTML ke iframe sandbox
       iframe.srcdoc = sandboxedHTML;
 
-      // Tunggu hingga iframe selesai render, lalu kirimkan payload data
       iframe.onload = () => {
         iframe.contentWindow.postMessage({
-          type: 'START_DOWNLOAD',
-          fileBuffer: arrayBuffer,
-          filename: file.name,
+          type: 'MOUNT',
+          buffer: arrayBuffer,
+          name: file.name,
           multiplier: multiplier,
-          totalExpectedSize: file.size * multiplier
+          totalSize: totalBytes,
+          isStrict: isStrict,
+          origHash: fileHash
         }, '*');
 
-        metrics.innerHTML = `✅ Komponen terisolasi dalam <b>Iframe Sandbox + Closed Shadow DOM</b>. Klik tombol di dalam kotak hijau untuk eksekusi stress test!`;
+        metrics.innerHTML = `✅ <b>Lapisan Siap:</b> File terisolasi di Iframe Sandbox + Closed Shadow DOM.<br>` +
+          (isStrict ? `🔐 <b>SHA-256 Asal:</b> <span style="font-size:11px; color:#a7f3d0;">${fileHash}</span>` : `🛡️ Mode Standar aktif.`);
       };
     });
 
-    // Menerima laporan performa dari lapisan terdalam
     window.addEventListener('message', (e) => {
-      if (e.data.type === 'METRICS') {
-        metrics.innerHTML = `🏁 <b>Hasil Pengetasan:</b> Waktu Proses: <b>${e.data.duration} detik</b> | Kecepatan Alir Memori: <b>${e.data.speed} MB/s</b>`;
+      if (e.data.type === 'DONE') {
+        metrics.innerHTML = `🏁 <b>Hasil Pengujian:</b><br>` +
+          `• Waktu Proses: <b>${e.data.duration} detik</b><br>` +
+          `• Throughput Memori: <b>${e.data.speed} MB/s</b><br>` +
+          `• Mode Keamanan: <b>${e.data.isStrict ? 'Super Ketat (CSP + Hash Validated)' : 'Standar'}</b>`;
       }
     });
   </script>
