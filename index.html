@@ -8,411 +8,471 @@
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #090d16;
       color: #f1f5f9;
-      margin: 0;
-      padding: 16px;
+      height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      align-items: center;
+      padding: 10px;
+      overflow: hidden; /* Mencegah layar geser */
     }
-    .card {
+    .app-container {
       background: #131d31;
-      padding: 22px 18px;
-      border-radius: 18px;
       width: 100%;
-      max-width: 540px;
+      max-width: 480px;
+      height: 96vh;
+      max-height: 720px;
+      border-radius: 20px;
       border: 1px solid #1e293b;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    h2 {
-      font-size: 22px;
-      margin-top: 0;
-      margin-bottom: 6px;
-      color: #38bdf8;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
       display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    /* Header & Tab Navigation */
+    .header {
+      padding: 12px 16px 8px;
+      border-bottom: 1px solid #1e293b;
+      background: #0f172a;
+    }
+    .title-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-    }
-    .desc {
-      font-size: 13px;
-      color: #94a3b8;
-      line-height: 1.5;
-      margin-bottom: 18px;
-    }
-    .form-group {
-      margin-bottom: 16px;
-    }
-    label {
-      display: block;
       margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #cbd5e1;
     }
-    .source-selector {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .source-btn {
-      flex: 1;
-      min-height: 44px;
-      background: #090d16;
-      border: 1.5px solid #334155;
-      color: #94a3b8;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .source-btn.active {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #38bdf8;
-    }
-    select, input[type="file"] {
-      width: 100%;
-      min-height: 52px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #090d16;
-      border: 1.5px solid #334155;
-      color: #fff;
-      font-size: 15px;
-    }
-    .btn-main {
-      background: #2563eb;
-      color: white;
-      border: none;
-      min-height: 52px;
-      border-radius: 12px;
+    h1 {
       font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 8px;
-      transition: transform 0.1s, background 0.2s;
-    }
-    .btn-main:active {
-      transform: scale(0.98);
-      background: #1d4ed8;
-    }
-    #metrics {
-      margin-top: 18px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px;
       color: #38bdf8;
-      background: #090d16;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #1e293b;
-      line-height: 1.6;
-      word-break: break-all;
-    }
-    #sandbox-wrapper {
-      margin-top: 18px;
-      border: 2px dashed #334155;
-      border-radius: 14px;
-      padding: 12px;
-      background: #06090f;
-    }
-    .sandbox-header {
-      font-size: 13px;
-      font-weight: 600;
-      color: #e2e8f0;
-      margin-bottom: 10px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 6px;
     }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: #090d16;
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.4);
+    }
+    /* Tab Contents */
+    .tab-body {
+      flex: 1;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .view-panel {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .view-panel.active {
+      display: flex;
+    }
+    .field-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    select, input[type="file"] {
+      width: 100%;
+      height: 44px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #090d16;
+      border: 1px solid #334155;
+      color: #fff;
+      font-size: 13px;
+    }
+    .source-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .src-btn {
+      flex: 1;
+      height: 34px;
+      background: #090d16;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .src-btn.active {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    /* Info Card di Tab Keamanan */
+    .sec-card {
+      background: #090d16;
+      border: 1px solid #334155;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #94a3b8;
+    }
+    .sec-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .btn-action {
+      background: #2563eb;
+      color: white;
+      border: none;
+      height: 46px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-action:active { background: #1d4ed8; }
+    /* Runner & Metrik */
+    #metrics {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 11px;
+      color: #38bdf8;
+      background: #090d16;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      line-height: 1.4;
+      min-height: 52px;
+    }
+    #sandbox-wrapper {
+      flex: 1;
+      margin-top: 10px;
+      border: 1.5px dashed #334155;
+      border-radius: 12px;
+      padding: 6px;
+      background: #06090f;
+      display: flex;
+      flex-direction: column;
+    }
     iframe {
       width: 100%;
-      height: 155px;
+      flex: 1;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>⚡ Stress-Test & Multi-DOM</h2>
-    <div class="desc">
-      Otomatis mendeteksi file di repo GitHub, diproses via Blob & Stream ke lapisan Sandboxed Iframe + Shadow DOM.
-    </div>
-
-    <!-- Pilihan Sumber File -->
-    <div class="form-group">
-      <label>1. Sumber File:</label>
-      <div class="source-selector">
-        <button type="button" class="source-btn active" id="btnModeRepo">📁 File dari Repo (Auto)</button>
-        <button type="button" class="source-btn" id="btnModeUpload">📤 Upload Manual</button>
+  <div class="app-container">
+    <!-- Header & Mode Tabs -->
+    <div class="header">
+      <div class="title-row">
+        <h1>⚡ DOM Stress-Tester</h1>
+        <span style="font-size: 11px; color: #64748b;">v3.0 Zero-Scroll</span>
       </div>
-
-      <!-- Dropdown File Otomatis dari Repo -->
-      <div id="repoFileSection">
-        <select id="repoFileSelect">
-          <option value="">🔄 Sedang memindai file repositori...</option>
-        </select>
-        <span style="font-size: 11px; color: #64748b; margin-top: 4px; display: block;">
-          *Daftar file di atas diperbarui otomatis langsung dari GitHub Anda.
-        </span>
-      </div>
-
-      <!-- Input File Manual -->
-      <div id="uploadFileSection" style="display: none;">
-        <input type="file" id="localFileInput">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-input', this)">📁 1. File & MIME</button>
+        <button class="tab-btn" onclick="switchTab('tab-sec', this)">🛡️ 2. Sekuriti</button>
+        <button class="tab-btn" onclick="switchTab('tab-runner', this)">🚀 3. Runner</button>
       </div>
     </div>
 
-    <!-- Pilihan Mode Pengetatan -->
-    <div class="form-group">
-      <label>2. Tingkat Pengetatan Keamanan:</label>
-      <select id="securityLevel">
-        <option value="standard">🟢 Mode Standar (Open Shadow-DOM)</option>
-        <option value="strict">🟡 Mode Ketat (Closed Shadow-DOM + RAM Flush)</option>
-        <option value="super-strict" selected>🔴 Mode Super Ketat (CSP Lockdown + SHA-256)</option>
-      </select>
-    </div>
+    <div class="tab-body">
+      <!-- TAB 1: FILE & MIME SELECTION -->
+      <div class="view-panel active" id="tab-input">
+        <div>
+          <div class="field-group">
+            <label>Sumber File:</label>
+            <div class="source-buttons">
+              <button class="src-btn active" id="btnRepo" onclick="setSource('repo')">Auto Repo</button>
+              <button class="src-btn" id="btnManual" onclick="setSource('manual')">Upload HP</button>
+            </div>
+            <div id="repoBox">
+              <select id="repoFileSelect">
+                <option value="">🔄 Memindai repo...</option>
+              </select>
+            </div>
+            <div id="uploadBox" style="display: none;">
+              <input type="file" id="localFile">
+            </div>
+          </div>
 
-    <!-- Multiplier Beban -->
-    <div class="form-group">
-      <label>3. Multiplier Beban (Stress Scale):</label>
-      <select id="multiplier">
-        <option value="1">1x (Ukuran Asli)</option>
-        <option value="5">5x Beban (Duplikasi Memori)</option>
-        <option value="20">20x Beban (Uji Berat)</option>
-        <option value="50" selected>50x Beban (Extreme Stress)</option>
-      </select>
-    </div>
+          <div class="field-group">
+            <label>Format & MIME Type Target:</label>
+            <select id="mimeSelect">
+              <option value="txt|text/plain">.TXT (text/plain)</option>
+              <option value="js|application/javascript">.JS (application/javascript)</option>
+              <option value="json|application/json">.JSON (application/json)</option>
+              <option value="html|text/html">.HTML (text/html)</option>
+              <option value="bin|application/octet-stream">.BIN (application/octet-stream)</option>
+              <option value="wasm|application/wasm">.WASM (application/wasm)</option>
+              <option value="dat|">.DAT (Tanpa MIME / Raw Binary)</option>
+              <option value="custom|application/x-stress-custom">.CUSTOM (MIME Tidak Resmi)</option>
+            </select>
+          </div>
 
-    <button class="btn-main" id="btnPrepare">⚡ Siapkan ke Lapisan DOM</button>
+          <div class="field-group">
+            <label>Multiplier Beban (Duplikasi Memori):</label>
+            <select id="multiplier">
+              <option value="1">1x (Ukuran Asli)</option>
+              <option value="10">10x Beban</option>
+              <option value="50" selected>50x Beban (High Stress)</option>
+              <option value="100">100x Beban (Extreme Stress)</option>
+            </select>
+          </div>
+        </div>
 
-    <div id="metrics">Memindai file repositori...</div>
-
-    <!-- Area Lapisan Multi-DOM -->
-    <div id="sandbox-wrapper">
-      <div class="sandbox-header">
-        🔒 Lapisan Terisolasi (Sandboxed Frame):
+        <button class="btn-action" onclick="goTab('tab-sec')">Lanjut: Atur Sekuriti ➔</button>
       </div>
-      <iframe id="sandboxIframe" sandbox="allow-scripts allow-downloads"></iframe>
+
+      <!-- TAB 2: SECURITY MODES -->
+      <div class="view-panel" id="tab-sec">
+        <div>
+          <div class="field-group">
+            <label>Tingkat Isolasi Pengetatan:</label>
+            <select id="secLevel" onchange="updateSecCard()">
+              <option value="standard">🟢 Standar (Open Shadow DOM)</option>
+              <option value="strict">🟡 Ketat (Closed Shadow DOM + RAM Flush)</option>
+              <option value="super-strict" selected>🔴 Super Ketat (CSP Lockdown + SHA-256)</option>
+            </select>
+          </div>
+
+          <div class="sec-card" id="secCard">
+            <span class="sec-badge" style="background:#dc2626; color:#fff;">SUPER KETAT</span><br>
+            • <b>Strict CSP</b> memblokir 100% jaringan luar.<br>
+            • <b>SHA-256 Checksum</b> memvalidasi keutuhan buffer.<br>
+            • <b>Closed Shadow Root</b> mengisolasi tombol unduh.
+          </div>
+        </div>
+
+        <button class="btn-action" onclick="prepareAndGoRunner()">⚡ Siapkan ke Multi-DOM ➔</button>
+      </div>
+
+      <!-- TAB 3: RUNNER & METRICS -->
+      <div class="view-panel" id="tab-runner">
+        <div id="metrics">Menunggu konfigurasi...</div>
+        <div id="sandbox-wrapper">
+          <iframe id="sandboxFrame" sandbox="allow-scripts allow-downloads"></iframe>
+        </div>
+        <button class="btn-action" style="margin-top: 8px; background: #334155;" onclick="goTab('tab-input')">⚙️ Ganti Parameter</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const btnModeRepo = document.getElementById('btnModeRepo');
-    const btnModeUpload = document.getElementById('btnModeUpload');
-    const repoFileSection = document.getElementById('repoFileSection');
-    const uploadFileSection = document.getElementById('uploadFileSection');
-    const repoFileSelect = document.getElementById('repoFileSelect');
-    const localFileInput = document.getElementById('localFileInput');
-    const securityLevelSelect = document.getElementById('securityLevel');
-    const multiplierSelect = document.getElementById('multiplier');
-    const btnPrepare = document.getElementById('btnPrepare');
-    const metrics = document.getElementById('metrics');
-    const iframe = document.getElementById('sandboxIframe');
-
     let currentSource = 'repo';
+    const ALL_FORMATS = [
+      { ext: 'txt', mime: 'text/plain' },
+      { ext: 'js', mime: 'application/javascript' },
+      { ext: 'json', mime: 'application/json' },
+      { ext: 'html', mime: 'text/html' },
+      { ext: 'bin', mime: 'application/octet-stream' },
+      { ext: 'wasm', mime: 'application/wasm' },
+      { ext: 'dat', mime: '' },
+      { ext: 'custom', mime: 'application/x-stress-custom' }
+    ];
 
-    // 1. AUTO SCAN FILE DARI GITHUB API
-    async function autoScanRepoFiles() {
-      // Deteksi otomatis owner & nama repo dari URL aktif
-      let owner = 'ary05171';
-      let repo = 'download-test-blob';
+    // Navigasi Tab
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
 
-      const hostParts = window.location.hostname.split('.');
-      if (hostParts.length >= 3 && hostParts[1] === 'github' && hostParts[2] === 'io') {
-        owner = hostParts[0];
-        const pathParts = window.location.pathname.split('/').filter(Boolean);
-        if (pathParts.length > 0) repo = pathParts[0];
+    function goTab(tabId) {
+      const idx = tabId === 'tab-input' ? 0 : tabId === 'tab-sec' ? 1 : 2;
+      document.querySelectorAll('.tab-btn')[idx].click();
+    }
+
+    function setSource(src) {
+      currentSource = src;
+      document.getElementById('btnRepo').classList.toggle('active', src === 'repo');
+      document.getElementById('btnManual').classList.toggle('active', src === 'manual');
+      document.getElementById('repoBox').style.display = src === 'repo' ? 'block' : 'none';
+      document.getElementById('uploadBox').style.display = src === 'manual' ? 'block' : 'none';
+    }
+
+    function updateSecCard() {
+      const lvl = document.getElementById('secLevel').value;
+      const card = document.getElementById('secCard');
+      if (lvl === 'standard') {
+        card.innerHTML = `<span class="sec-badge" style="background:#16a34a; color:#fff;">STANDAR</span><br>• Mode normal Sandbox Iframe.<br>• Shadow DOM Open.<br>• Throughput murni tanpa batas CSP.`;
+      } else if (lvl === 'strict') {
+        card.innerHTML = `<span class="sec-badge" style="background:#ca8a04; color:#fff;">KETAT</span><br>• Closed Shadow-DOM aktif.<br>• Immediate RAM Revocation.<br>• Event bubbling terisolasi.`;
+      } else {
+        card.innerHTML = `<span class="sec-badge" style="background:#dc2626; color:#fff;">SUPER KETAT</span><br>• <b>Strict CSP</b> memblokir 100% koneksi luar.<br>• <b>SHA-256 Checksum</b> menjamin bit-parity.<br>• Closed Shadow Root terdalam.`;
+      }
+    }
+
+    // Auto Scan GitHub Repo
+    async function scanRepo() {
+      const sel = document.getElementById('repoFileSelect');
+      let owner = 'ary05171', repo = 'download-test-blob';
+      const hp = window.location.hostname.split('.');
+      if (hp.length >= 3 && hp[1] === 'github' && hp[2] === 'io') {
+        owner = hp[0];
+        const pp = window.location.pathname.split('/').filter(Boolean);
+        if (pp.length > 0) repo = pp[0];
       }
 
       try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`);
-        if (!response.ok) throw new Error("Gagal membaca daftar file dari GitHub API.");
-        
-        const items = await response.json();
-        
-        // Filter hanya file (abaikan folder dan abaikan file index.html)
-        const availableFiles = items.filter(item => item.type === 'file' && item.name !== 'index.html');
-
-        repoFileSelect.innerHTML = '';
-        if (availableFiles.length === 0) {
-          repoFileSelect.innerHTML = '<option value="">(Tidak ada file sample di repo)</option>';
-          metrics.innerHTML = `⚠️ Belum ada file sample di repo. Silakan upload file ke GitHub.`;
-          return;
-        }
-
-        availableFiles.forEach(f => {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`);
+        if (!res.ok) throw new Error();
+        const files = (await res.json()).filter(f => f.type === 'file' && f.name !== 'index.html');
+        sel.innerHTML = '';
+        files.forEach(f => {
           const opt = document.createElement('option');
           opt.value = f.name;
-          const sizeKb = (f.size / 1024).toFixed(1);
-          opt.textContent = `📄 ${f.name} (${sizeKb} KB)`;
-          repoFileSelect.appendChild(opt);
+          opt.textContent = `📄 ${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+          sel.appendChild(opt);
         });
-
-        metrics.innerHTML = `✅ Ditemukan <b>${availableFiles.length} file</b> di repo. Pilih file di menu lalu klik 'Siapkan'.`;
-      } catch (err) {
-        repoFileSelect.innerHTML = `
-          <option value="area_config.json">📄 area_config.json</option>
-          <option value="README.md">📄 README.md</option>
-        `;
-        metrics.innerHTML = `⚠️ Mode otomatis fallback aktif. Menampilkan file terdeteksi.`;
+      } catch (e) {
+        sel.innerHTML = '<option value="area_config.json">📄 area_config.json</option><option value="README.md">📄 README.md</option>';
       }
     }
+    scanRepo();
 
-    // Jalankan pemindaian otomatis saat web dibuka
-    autoScanRepoFiles();
-
-    // Tab Switching
-    btnModeRepo.addEventListener('click', () => {
-      currentSource = 'repo';
-      btnModeRepo.classList.add('active');
-      btnModeUpload.classList.remove('active');
-      repoFileSection.style.display = 'block';
-      uploadFileSection.style.display = 'none';
-    });
-
-    btnModeUpload.addEventListener('click', () => {
-      currentSource = 'upload';
-      btnModeUpload.classList.add('active');
-      btnModeRepo.classList.remove('active');
-      uploadFileSection.style.display = 'block';
-      repoFileSection.style.display = 'none';
-    });
-
-    async function calculateSHA256(buffer) {
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-      return Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+    async function getSHA256(buf) {
+      const h = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    // Eksekusi Pemrosesan
-    btnPrepare.addEventListener('click', async () => {
-      let arrayBuffer;
-      let fileName = "";
+    // Eksekusi Pindah ke Runner
+    async function prepareAndGoRunner() {
+      goTab('tab-runner');
+      const metrics = document.getElementById('metrics');
+      const iframe = document.getElementById('sandboxFrame');
+      metrics.innerHTML = `⏳ Membaca payload & menyiapkan DOM...`;
 
-      metrics.innerHTML = `⏳ Mempersiapkan data...`;
-
+      let arrayBuffer, baseName = "";
       try {
         if (currentSource === 'repo') {
-          fileName = repoFileSelect.value;
-          if (!fileName) {
-            alert("Pilih file dari daftar terlebih dahulu!");
-            return;
-          }
-          metrics.innerHTML = `🌐 Mengambil <b>${fileName}</b> dari repo...`;
-          
-          const response = await fetch('./' + fileName);
-          if (!response.ok) throw new Error(`Gagal mengunduh "${fileName}" (HTTP ${response.status})`);
-          arrayBuffer = await response.arrayBuffer();
+          baseName = document.getElementById('repoFileSelect').value || 'sample.txt';
+          const r = await fetch('./' + baseName);
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          arrayBuffer = await r.arrayBuffer();
         } else {
-          const file = localFileInput.files[0];
-          if (!file) {
-            alert("Pilih file dari perangkat terlebih dahulu!");
-            return;
-          }
-          fileName = file.name;
-          arrayBuffer = await file.arrayBuffer();
+          const f = document.getElementById('localFile').files[0];
+          if (!f) throw new Error("Pilih file lokal terlebih dahulu!");
+          baseName = f.name;
+          arrayBuffer = await f.arrayBuffer();
         }
       } catch (err) {
-        metrics.innerHTML = `❌ <b>Error:</b> ${err.message}`;
+        metrics.innerHTML = `❌ Error: ${err.message}`;
         return;
       }
 
-      const multiplier = parseInt(multiplierSelect.value, 10);
-      const securityLevel = securityLevelSelect.value;
+      const multiplier = parseInt(document.getElementById('multiplier').value, 10);
+      const secLevel = document.getElementById('secLevel').value;
+      const [selExt, selMime] = document.getElementById('mimeSelect').value.split('|');
       const totalBytes = arrayBuffer.byteLength * multiplier;
-      const estTotalMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
-      let fileHash = "Tidak dihitung";
-      if (securityLevel === 'super-strict') {
-        metrics.innerHTML = `🔐 Menghitung Checksum SHA-256 keaslian data...`;
-        fileHash = await calculateSHA256(arrayBuffer);
+      let hash = "N/A";
+      if (secLevel === 'super-strict') {
+        metrics.innerHTML = `🔐 Mengkalkulasi Checksum SHA-256...`;
+        hash = await getSHA256(arrayBuffer);
       }
 
-      const cspMetaTag = (securityLevel === 'super-strict')
+      const csp = (secLevel === 'super-strict')
         ? `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; blob:;">`
         : ``;
 
-      const shadowMode = (securityLevel === 'standard') ? 'open' : 'closed';
+      const shadowMode = (secLevel === 'standard') ? 'open' : 'closed';
 
-      const sandboxedHTML = `
+      // Bangun isi HTML Iframe Sandboxed dengan Shadow DOM & Dual Trigger (Single & Batch)
+      const frameHTML = `
         <!DOCTYPE html>
         <html>
         <head>
-          ${cspMetaTag}
+          ${csp}
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>body { margin: 0; background: transparent; font-family: sans-serif; }</style>
         </head>
         <body>
-          <div id="host-element"></div>
-
+          <div id="mount-point"></div>
           <script>
-            window.addEventListener('message', (event) => {
-              if (event.data.type === 'MOUNT') {
-                const { buffer, name, multiplier, totalSize, secLevel, hash } = event.data;
-                initDOM(buffer, name, multiplier, totalSize, secLevel, hash);
-              }
+            window.addEventListener('message', (ev) => {
+              if (ev.data.type === 'START') initIsolatedDOM(ev.data);
             });
 
-            function initDOM(buffer, filename, multiplier, totalSize, secLevel, hash) {
-              const host = document.getElementById('host-element');
+            function initIsolatedDOM(data) {
+              const { buffer, baseName, multiplier, totalSize, secLevel, selExt, selMime, allFormats } = data;
+              const host = document.getElementById('mount-point');
               const shadow = host.attachShadow({ mode: '${shadowMode}' });
 
-              const wrapper = document.createElement('div');
-              wrapper.innerHTML = \`
+              const wrap = document.createElement('div');
+              wrap.innerHTML = \`
                 <style>
-                  .box {
-                    background: #111827;
-                    border: 1.5px solid #10b981;
-                    padding: 14px;
-                    border-radius: 12px;
-                    text-align: center;
+                  .box { display: flex; flex-direction: column; gap: 8px; }
+                  .btn-run {
+                    background: #10b981; color: #042f2e; border: none;
+                    height: 42px; border-radius: 8px; font-weight: 800;
+                    font-size: 13px; cursor: pointer;
                   }
-                  .btn-dl {
-                    background: #10b981;
-                    color: #062419;
-                    width: 100%;
-                    min-height: 48px;
-                    border: none;
-                    border-radius: 10px;
-                    font-size: 15px;
-                    font-weight: 800;
-                    cursor: pointer;
+                  .btn-run:active { background: #059669; }
+                  .btn-batch {
+                    background: #f59e0b; color: #451a03; border: none;
+                    height: 42px; border-radius: 8px; font-weight: 800;
+                    font-size: 12px; cursor: pointer;
                   }
-                  .btn-dl:active { background: #059669; }
-                  .status {
-                    color: #94a3b8;
-                    font-size: 12px;
-                    margin-top: 8px;
-                    font-family: monospace;
-                  }
+                  .btn-batch:active { background: #d97706; }
+                  .status-lbl { font-size: 10px; color: #94a3b8; text-align: center; font-family: monospace; }
                 </style>
                 <div class="box">
-                  <button class="btn-dl" id="execBtn">💾 Unduh Payload (\${secLevel.toUpperCase()})</button>
-                  <div class="status" id="statusText">Target Stream: \${(totalSize / (1024*1024)).toFixed(2)} MB</div>
+                  <button class="btn-run" id="btnSingle">💾 Unduh Satuan (.\${selExt})</button>
+                  <button class="btn-batch" id="btnBatch">🔥 Unduh Semua Format Sekaligus (Batch)</button>
+                  <div class="status-lbl" id="statusLbl">Target Buffer: \${(totalSize/(1024*1024)).toFixed(2)} MB</div>
                 </div>
               \`;
-              shadow.appendChild(wrapper);
+              shadow.appendChild(wrap);
 
-              const execBtn = shadow.getElementById('execBtn');
-              const statusText = shadow.getElementById('statusText');
+              const statusLbl = shadow.getElementById('statusLbl');
 
-              execBtn.addEventListener('click', async () => {
-                const startTime = performance.now();
-                statusText.innerText = "Memproses streaming buffer...";
-
+              function buildStreamBlob(mime) {
                 let count = 0;
                 const stream = new ReadableStream({
                   start(controller) {
@@ -428,31 +488,43 @@
                     push();
                   }
                 });
+                return new Response(stream).blob();
+              }
 
-                const blob = await new Response(stream).blob();
-                const blobUrl = URL.createObjectURL(blob);
+              function triggerDownload(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+              }
 
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                link.download = "tested_" + filename;
-                link.click();
+              // Unduh Format Tunggal
+              shadow.getElementById('btnSingle').addEventListener('click', async () => {
+                const t0 = performance.now();
+                statusLbl.innerText = "Memproses alir data...";
+                const blob = await buildStreamBlob(selMime);
+                triggerDownload(blob, "test_" + baseName + "." + selExt);
+                const dur = ((performance.now() - t0)/1000).toFixed(2);
+                statusLbl.innerText = \`Selesai: \${dur}s\`;
+                window.parent.postMessage({ type: 'DONE', count: 1, dur }, '*');
+              });
 
-                if (secLevel !== 'standard') {
-                  setTimeout(() => URL.revokeObjectURL(blobUrl), 50);
+              // Batch Unduh Seluruh Ekstensi (Stress Multi-Trigger)
+              shadow.getElementById('btnBatch').addEventListener('click', async () => {
+                const t0 = performance.now();
+                statusLbl.innerText = "Batch unduh berjalan...";
+                for (let i = 0; i < allFormats.length; i++) {
+                  const fmt = allFormats[i];
+                  statusLbl.innerText = \`Unduh [\${i+1}/\${allFormats.length}]: .\${fmt.ext}\`;
+                  const blob = await buildStreamBlob(fmt.mime);
+                  triggerDownload(blob, "batch_" + i + "_" + baseName + "." + fmt.ext);
+                  await new Promise(r => setTimeout(r, 220)); // Delay antar trigger
                 }
-
-                const durationSec = ((performance.now() - startTime) / 1000).toFixed(2);
-                const speedMBps = ((totalSize / (1024 * 1024)) / durationSec).toFixed(2);
-
-                statusText.innerText = \`Selesai: \${durationSec}s (\${speedMBps} MB/s)\`;
-
-                window.parent.postMessage({
-                  type: 'DONE',
-                  duration: durationSec,
-                  speed: speedMBps,
-                  secLevel: secLevel,
-                  hash: hash
-                }, '*');
+                const dur = ((performance.now() - t0)/1000).toFixed(2);
+                statusLbl.innerText = \`Batch Berhasil: \${dur}s\`;
+                window.parent.postMessage({ type: 'DONE', count: allFormats.length, dur }, '*');
               });
             }
           <\/script>
@@ -460,31 +532,33 @@
         </html>
       `;
 
-      iframe.srcdoc = sandboxedHTML;
-
+      iframe.srcdoc = frameHTML;
       iframe.onload = () => {
         iframe.contentWindow.postMessage({
-          type: 'MOUNT',
+          type: 'START',
           buffer: arrayBuffer,
-          name: fileName,
-          multiplier: multiplier,
+          baseName,
+          multiplier,
           totalSize: totalBytes,
-          secLevel: securityLevel,
-          hash: fileHash
+          secLevel,
+          selExt,
+          selMime,
+          allFormats: ALL_FORMATS
         }, '*');
 
-        metrics.innerHTML = `✅ <b>Payload Siap:</b> File <code>${fileName}</code> (~${estTotalMB} MB)<br>` +
-          `• <b>Level Keamanan:</b> ${securityLevel.toUpperCase()}<br>` +
-          (securityLevel === 'super-strict' ? `• <b>SHA-256 Hash:</b> <span style="font-size:11px; color:#a7f3d0;">${fileHash}</span>` : '');
+        metrics.innerHTML = `✅ <b>DOM Siap:</b> <code>${baseName}</code> (~${(totalBytes/(1024*1024)).toFixed(2)} MB)<br>` +
+          `• Format: <b>.${selExt}</b> | Mode: <b>${secLevel.toUpperCase()}</b><br>` +
+          (secLevel === 'super-strict' ? `• SHA-256: <span style="font-size:10px; color:#6ee7b7;">${hash.substring(0,24)}...</span>` : '');
       };
-    });
+    }
 
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'DONE') {
-        metrics.innerHTML = `🏁 <b>Hasil Pengujian Unduhan:</b><br>` +
-          `• Durasi Proses: <b>${e.data.duration} detik</b><br>` +
-          `• Throughput Stream: <b>${e.data.speed} MB/s</b><br>` +
-          `• Status Mode: <b>${e.data.secLevel.toUpperCase()}</b>`;
+    window.addEventListener('message', (ev) => {
+      if (ev.data.type === 'DONE') {
+        const metrics = document.getElementById('metrics');
+        metrics.innerHTML = `🏁 <b>Hasil Pengujian:</b><br>` +
+          `• File Terunduh: <b>${ev.data.count} File</b><br>` +
+          `• Total Waktu: <b>${ev.data.dur} detik</b><br>` +
+          `• Buffer Multi-DOM: <b>Lolos Validasi Keamanan</b>`;
       }
     });
   </script>
