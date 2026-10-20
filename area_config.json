@@ -1,0 +1,47 @@
+{
+  "areaName": "Desa & Peta Kustom Apex3D",
+  "version": "1.0",
+  "glbAssignments": {
+    "sample_terrain_contour.obj": "TERRAIN"
+  },
+  "housePortals": [
+    {
+      "id": "house_door_main",
+      "name": "Rumah Pedesaan GLB",
+      "type": "HOUSE_DOOR_ENTER",
+      "entrancePos": [
+        106.8,
+        15.6,
+        103.3
+      ],
+      "interiorPos": [
+        250,
+        1.5,
+        250
+      ],
+      "promptText": "[Buka Pintu] Masuk Ke Rumah GLB"
+    },
+    {
+      "id": "house_door_exit",
+      "name": "Pintu Keluar Rumah",
+      "type": "HOUSE_DOOR_EXIT",
+      "interiorPos": [
+        250,
+        1.5,
+        250
+      ],
+      "entrancePos": [
+        106.8,
+        15.6,
+        108
+      ],
+      "promptText": "[Buka Pintu] Keluar Ke Desa"
+    }
+  ],
+  "terrainModel": "sample_terrain_contour.obj",
+  "playerModel": "cyber_knight_default",
+  "playerConfig": "player_config.json",
+  "barriersConfig": "game_world_barriers.json",
+  "actionsConfig": "game_actions.json",
+  "npcsConfig": "game_npcs.json"
+}

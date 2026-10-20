@@ -2,9 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Viewport diatur optimal agar pas di layar HP tanpa mengecil -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Stress-Test Download & Sandboxed DOM</title>
+  <title>Stress-Test Download & Multi-DOM</title>
   <style>
     * {
       box-sizing: border-box;
@@ -33,72 +32,65 @@
     h2 {
       font-size: 22px;
       margin-top: 0;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #38bdf8;
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .desc {
-      font-size: 14px;
+      font-size: 13px;
       color: #94a3b8;
       line-height: 1.5;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     label {
       display: block;
       margin-bottom: 8px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #cbd5e1;
     }
-    input[type="file"], select {
+    /* Tab Sumber File */
+    .source-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .source-btn {
+      flex: 1;
+      min-height: 44px;
+      background: #090d16;
+      border: 1.5px solid #334155;
+      color: #94a3b8;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .source-btn.active {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    input[type="text"], input[type="file"], select {
       width: 100%;
-      min-height: 52px;
+      min-height: 50px;
       padding: 12px 14px;
       border-radius: 12px;
       background: #090d16;
       border: 1.5px solid #334155;
       color: #fff;
-      font-size: 16px; /* 16px mencegah auto-zoom di iOS */
-    }
-    /* Toggle Mode Super Ketat */
-    .toggle-container {
-      background: #090d16;
-      border: 1.5px solid #3b82f6;
-      padding: 14px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .toggle-label {
       font-size: 15px;
-      font-weight: 600;
-      color: #e2e8f0;
-      margin: 0;
-    }
-    .toggle-sub {
-      font-size: 12px;
-      color: #38bdf8;
-      display: block;
-      margin-top: 2px;
-    }
-    input[type="checkbox"] {
-      width: 26px;
-      height: 26px;
-      accent-color: #3b82f6;
-      cursor: pointer;
     }
     .btn-main {
       background: #2563eb;
       color: white;
       border: none;
-      min-height: 54px;
+      min-height: 52px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 700;
@@ -108,7 +100,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: background 0.2s, transform 0.1s;
+      margin-top: 6px;
+      transition: transform 0.1s, background 0.2s;
     }
     .btn-main:active {
       transform: scale(0.98);
@@ -128,24 +121,24 @@
     }
     /* Wadah Multi-DOM */
     #sandbox-wrapper {
-      margin-top: 20px;
+      margin-top: 18px;
       border: 2px dashed #334155;
       border-radius: 14px;
-      padding: 14px;
+      padding: 12px;
       background: #06090f;
     }
     .sandbox-header {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #e2e8f0;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     iframe {
       width: 100%;
-      height: 160px;
+      height: 155px;
       border: none;
       border-radius: 8px;
     }
@@ -156,16 +149,44 @@
   <div class="card">
     <h2>⚡ Stress-Test & Multi-DOM</h2>
     <div class="desc">
-      Pengujian throughput unduhan file lokal dengan isolasi ganda (Sandboxed Iframe & Closed Shadow-DOM).
+      Download buffer testing via Blob & Streaming API dengan lapisan enkapsulasi Iframe Sandbox & Shadow DOM.
     </div>
 
+    <!-- Pilihan Sumber File -->
     <div class="form-group">
-      <label>1. Pilih File Target:</label>
-      <input type="file" id="fileInput">
+      <label>1. Sumber File:</label>
+      <div class="source-selector">
+        <button type="button" class="source-btn active" id="btnModeRepo">📁 File dari Repo</button>
+        <button type="button" class="source-btn" id="btnModeUpload">📤 Upload Manual</button>
+      </div>
+
+      <!-- Input File Repo -->
+      <div id="repoFileSection">
+        <input type="text" id="repoFileName" value="sample.txt" placeholder="Nama file di repo (cth: sample.txt)">
+        <span style="font-size: 11px; color: #64748b; margin-top: 4px; display: block;">
+          *Pastikan file ini sudah diunggah di repositori GitHub Anda.
+        </span>
+      </div>
+
+      <!-- Input File Manual -->
+      <div id="uploadFileSection" style="display: none;">
+        <input type="file" id="localFileInput">
+      </div>
     </div>
 
+    <!-- Pilihan Mode Pengetatan -->
     <div class="form-group">
-      <label>2. Multiplier Beban (Stress Scale):</label>
+      <label>2. Tingkat Pengetatan Keamanan:</label>
+      <select id="securityLevel">
+        <option value="standard">🟢 Mode Standar (Open Shadow-DOM)</option>
+        <option value="strict">🟡 Mode Ketat (Closed Shadow-DOM + RAM Flush)</option>
+        <option value="super-strict" selected>🔴 Mode Super Ketat (CSP Lockdown + SHA-256)</option>
+      </select>
+    </div>
+
+    <!-- Multiplier Beban -->
+    <div class="form-group">
+      <label>3. Multiplier Beban (Stress Scale):</label>
       <select id="multiplier">
         <option value="1">1x (Ukuran Asli)</option>
         <option value="5">5x Beban (Duplikasi Memori)</option>
@@ -174,18 +195,9 @@
       </select>
     </div>
 
-    <!-- Toggle Pengetatan Super -->
-    <div class="toggle-container">
-      <div>
-        <label class="toggle-label" for="strictMode">🛡️ Mode Super Ketat</label>
-        <span class="toggle-sub">Strict CSP + SHA-256 Checksum</span>
-      </div>
-      <input type="checkbox" id="strictMode" checked>
-    </div>
-
     <button class="btn-main" id="btnPrepare">⚡ Siapkan ke Lapisan DOM</button>
 
-    <div id="metrics">Status: Menunggu file dipilih...</div>
+    <div id="metrics">Status: Pilih mode lalu klik siapkan.</div>
 
     <!-- Area Lapisan Multi-DOM -->
     <div id="sandbox-wrapper">
@@ -197,56 +209,104 @@
   </div>
 
   <script>
-    const fileInput = document.getElementById('fileInput');
+    // Referensi Elemen UI
+    const btnModeRepo = document.getElementById('btnModeRepo');
+    const btnModeUpload = document.getElementById('btnModeUpload');
+    const repoFileSection = document.getElementById('repoFileSection');
+    const uploadFileSection = document.getElementById('uploadFileSection');
+    const repoFileNameInput = document.getElementById('repoFileName');
+    const localFileInput = document.getElementById('localFileInput');
+    const securityLevelSelect = document.getElementById('securityLevel');
     const multiplierSelect = document.getElementById('multiplier');
-    const strictModeCheckbox = document.getElementById('strictMode');
     const btnPrepare = document.getElementById('btnPrepare');
     const metrics = document.getElementById('metrics');
     const iframe = document.getElementById('sandboxIframe');
 
-    // Fungsi utilitas untuk menghitung SHA-256 (Web Crypto API)
+    let currentSource = 'repo'; // 'repo' atau 'upload'
+
+    // Tab Switching Sumber File
+    btnModeRepo.addEventListener('click', () => {
+      currentSource = 'repo';
+      btnModeRepo.classList.add('active');
+      btnModeUpload.classList.remove('active');
+      repoFileSection.style.display = 'block';
+      uploadFileSection.style.display = 'none';
+    });
+
+    btnModeUpload.addEventListener('click', () => {
+      currentSource = 'upload';
+      btnModeUpload.classList.add('active');
+      btnModeRepo.classList.remove('active');
+      uploadFileSection.style.display = 'block';
+      repoFileSection.style.display = 'none';
+    });
+
+    // Hash SHA-256 Utility
     async function calculateSHA256(buffer) {
       const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
     }
 
+    // Eksekusi Pemrosesan
     btnPrepare.addEventListener('click', async () => {
-      const file = fileInput.files[0];
-      if (!file) {
-        alert("Pilih file terlebih dahulu!");
+      let arrayBuffer;
+      let fileName = "";
+
+      metrics.innerHTML = `⏳ Mempersiapkan file...`;
+
+      try {
+        if (currentSource === 'repo') {
+          fileName = repoFileNameInput.value.trim() || 'sample.txt';
+          metrics.innerHTML = `🌐 Mengambil <b>${fileName}</b> dari repositori GitHub...`;
+          
+          const response = await fetch('./' + fileName);
+          if (!response.ok) {
+            throw new Error(`File "${fileName}" tidak ditemukan di repo (HTTP ${response.status}). Coba upload file tersebut ke GitHub dulu, atau buat mode fallback.`);
+          }
+          arrayBuffer = await response.arrayBuffer();
+        } else {
+          const file = localFileInput.files[0];
+          if (!file) {
+            alert("Silakan pilih file dari perangkat terlebih dahulu!");
+            return;
+          }
+          fileName = file.name;
+          arrayBuffer = await file.arrayBuffer();
+        }
+      } catch (err) {
+        metrics.innerHTML = `❌ <b>Gagal Memuat File:</b> ${err.message}`;
         return;
       }
 
       const multiplier = parseInt(multiplierSelect.value, 10);
-      const isStrict = strictModeCheckbox.checked;
-      const totalBytes = file.size * multiplier;
+      const securityLevel = securityLevelSelect.value;
+      const totalBytes = arrayBuffer.byteLength * multiplier;
       const estTotalMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
-      metrics.innerHTML = `⏳ Membaca payload... Target ukuran: <b>${estTotalMB} MB</b>`;
-
-      const arrayBuffer = await file.arrayBuffer();
-      
-      let fileHash = "Dinonaktifkan";
-      if (isStrict) {
-        metrics.innerHTML = `🔐 Menghitung Checksum SHA-256 file asal...`;
+      let fileHash = "Tidak dihitung";
+      if (securityLevel === 'super-strict') {
+        metrics.innerHTML = `🔐 Menghitung Checksum SHA-256 keaslian data...`;
         fileHash = await calculateSHA256(arrayBuffer);
       }
 
-      // Meta CSP Super Ketat (Hanya diaktifkan jika mode super ketat dicentang)
-      const cspMetaTag = isStrict 
+      // 1. Injeksi Kebijakan CSP berdasarkan Level Pengetatan
+      const cspMetaTag = (securityLevel === 'super-strict')
         ? `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; blob:;">`
         : ``;
 
+      // 2. Mode Shadow DOM (Open vs Closed)
+      const shadowMode = (securityLevel === 'standard') ? 'open' : 'closed';
+
+      // 3. Bangun Isi Iframe
       const sandboxedHTML = `
         <!DOCTYPE html>
         <html>
         <head>
           ${cspMetaTag}
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { margin: 0; background: transparent; font-family: sans-serif; }
-          </style>
+          <style>body { margin: 0; background: transparent; font-family: sans-serif; }</style>
         </head>
         <body>
           <div id="host-element"></div>
@@ -254,15 +314,14 @@
           <script>
             window.addEventListener('message', (event) => {
               if (event.data.type === 'MOUNT') {
-                const { buffer, name, multiplier, totalSize, isStrict, origHash } = event.data;
-                initClosedShadowDOM(buffer, name, multiplier, totalSize, isStrict, origHash);
+                const { buffer, name, multiplier, totalSize, secLevel, hash } = event.data;
+                initDOM(buffer, name, multiplier, totalSize, secLevel, hash);
               }
             });
 
-            function initClosedShadowDOM(buffer, filename, multiplier, totalSize, isStrict, origHash) {
+            function initDOM(buffer, filename, multiplier, totalSize, secLevel, hash) {
               const host = document.getElementById('host-element');
-              // Enkapsulasi Tertutup
-              const shadow = host.attachShadow({ mode: 'closed' });
+              const shadow = host.attachShadow({ mode: '${shadowMode}' });
 
               const wrapper = document.createElement('div');
               wrapper.innerHTML = \`
@@ -270,7 +329,7 @@
                   .box {
                     background: #111827;
                     border: 1.5px solid #10b981;
-                    padding: 16px;
+                    padding: 14px;
                     border-radius: 12px;
                     text-align: center;
                   }
@@ -294,8 +353,8 @@
                   }
                 </style>
                 <div class="box">
-                  <button class="btn-dl" id="execBtn">💾 Unduh Payload (Multi-DOM)</button>
-                  <div class="status" id="statusText">Siap Stream: \${(totalSize / (1024*1024)).toFixed(2)} MB</div>
+                  <button class="btn-dl" id="execBtn">💾 Unduh Payload (\${secLevel.toUpperCase()})</button>
+                  <div class="status" id="statusText">Target Stream: \${(totalSize / (1024*1024)).toFixed(2)} MB</div>
                 </div>
               \`;
               shadow.appendChild(wrapper);
@@ -305,8 +364,9 @@
 
               execBtn.addEventListener('click', async () => {
                 const startTime = performance.now();
-                statusText.innerText = "Streaming buffer & verifikasi...";
+                statusText.innerText = "Memproses streaming buffer...";
 
+                // Stream duplikasi beban
                 let count = 0;
                 const stream = new ReadableStream({
                   start(controller) {
@@ -331,20 +391,22 @@
                 link.download = "tested_" + filename;
                 link.click();
 
-                // Pembersihan memori instan
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                // Pembersihan memori jika mode Ketat / Super Ketat
+                if (secLevel !== 'standard') {
+                  setTimeout(() => URL.revokeObjectURL(blobUrl), 50);
+                }
 
                 const durationSec = ((performance.now() - startTime) / 1000).toFixed(2);
                 const speedMBps = ((totalSize / (1024 * 1024)) / durationSec).toFixed(2);
 
-                statusText.innerText = \`Sukses! Waktu: \${durationSec}s (\${speedMBps} MB/s)\`;
+                statusText.innerText = \`Selesai: \${durationSec}s (\${speedMBps} MB/s)\`;
 
                 window.parent.postMessage({
                   type: 'DONE',
                   duration: durationSec,
                   speed: speedMBps,
-                  hash: origHash,
-                  isStrict: isStrict
+                  secLevel: secLevel,
+                  hash: hash
                 }, '*');
               });
             }
@@ -359,24 +421,30 @@
         iframe.contentWindow.postMessage({
           type: 'MOUNT',
           buffer: arrayBuffer,
-          name: file.name,
+          name: fileName,
           multiplier: multiplier,
           totalSize: totalBytes,
-          isStrict: isStrict,
-          origHash: fileHash
+          secLevel: securityLevel,
+          hash: fileHash
         }, '*');
 
-        metrics.innerHTML = `✅ <b>Lapisan Siap:</b> File terisolasi di Iframe Sandbox + Closed Shadow DOM.<br>` +
-          (isStrict ? `🔐 <b>SHA-256 Asal:</b> <span style="font-size:11px; color:#a7f3d0;">${fileHash}</span>` : `🛡️ Mode Standar aktif.`);
+        let modeBadge = "";
+        if (securityLevel === 'standard') modeBadge = "🟢 Standar (Open Shadow DOM)";
+        else if (securityLevel === 'strict') modeBadge = "🟡 Ketat (Closed Shadow DOM + Auto Revoke RAM)";
+        else modeBadge = "🔴 Super Ketat (CSP Lockdown + SHA-256 Active)";
+
+        metrics.innerHTML = `✅ <b>Payload Siap:</b> File <code>${fileName}</code> (~${estTotalMB} MB)<br>` +
+          `• <b>Level Keamanan:</b> ${modeBadge}<br>` +
+          (securityLevel === 'super-strict' ? `• <b>SHA-256 Hash:</b> <span style="font-size:11px; color:#a7f3d0;">${fileHash}</span>` : '');
       };
     });
 
     window.addEventListener('message', (e) => {
       if (e.data.type === 'DONE') {
-        metrics.innerHTML = `🏁 <b>Hasil Pengujian:</b><br>` +
-          `• Waktu Proses: <b>${e.data.duration} detik</b><br>` +
-          `• Throughput Memori: <b>${e.data.speed} MB/s</b><br>` +
-          `• Mode Keamanan: <b>${e.data.isStrict ? 'Super Ketat (CSP + Hash Validated)' : 'Standar'}</b>`;
+        metrics.innerHTML = `🏁 <b>Hasil Pengujian Unduhan:</b><br>` +
+          `• Durasi Proses: <b>${e.data.duration} detik</b><br>` +
+          `• Throughput Stream: <b>${e.data.speed} MB/s</b><br>` +
+          `• Status Mode: <b>${e.data.secLevel.toUpperCase()}</b>`;
       }
     });
   </script>
