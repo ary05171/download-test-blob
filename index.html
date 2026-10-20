@@ -3,465 +3,252 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Browser Blob Engine Tester</title>
+  <title>Gemini & AI Studio Engine Simulator</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #000000;
+      background: #000;
       color: #f1f5f9;
       min-height: 100dvh;
       display: flex;
       justify-content: center;
-      padding: 12px;
+      padding: 10px;
     }
-    .container {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* KARTU GAYA GEMINI CHAT CODE-BLOCK */
-    .gemini-code-card {
+    .card {
       background: #0d0f12;
       border: 1px solid #23272f;
       border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-    }
-    .gemini-header {
-      background: #16191f;
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #23272f;
-    }
-    .lang-tag {
-      font-size: 13px;
-      font-weight: 700;
-      color: #e2e8f0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .icon-btn {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .icon-btn:hover, .icon-btn:active {
-      background: #23272f;
-      color: #38bdf8;
-    }
-    .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
-
-    /* PREVIEW KONTEN */
-    .code-preview {
-      padding: 12px 14px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
-      color: #a5b4fc;
-      max-height: 90px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      background: #090a0d;
-      border-bottom: 1px solid #1c2029;
-    }
-
-    /* KONTROL PENGUJIAN */
-    .controls {
-      padding: 12px 14px;
+      width: 100%;
+      max-width: 460px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-    .grid-2 {
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #23272f;
+      padding-bottom: 8px;
+    }
+    h1 { font-size: 15px; color: #38bdf8; font-weight: 700; }
+    .badge { font-size: 10px; background: #1e293b; color: #38bdf8; padding: 2px 8px; border-radius: 6px; }
+    
+    /* Code Box Gaya Gemini */
+    .gemini-box {
+      background: #060709;
+      border: 1px solid #1c2029;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .gemini-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+    .icon-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #38bdf8;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* Pilihan Uji Simulator */
+    .btn-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
-    label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #94a3b8;
-      margin-bottom: 4px;
-      display: block;
-    }
-    select {
-      width: 100%;
-      height: 38px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: #16191f;
-      border: 1px solid #2d333f;
-      color: #fff;
-      font-size: 12px;
-    }
-    .btn-exec {
-      background: #2563eb;
-      color: white;
+    .btn-test {
+      height: 44px;
       border: none;
-      height: 42px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      padding: 4px;
+      text-align: center;
+      color: #fff;
     }
-    .btn-exec:active { background: #1d4ed8; }
+    .btn-test span { font-size: 9px; opacity: 0.8; font-weight: normal; }
+    
+    .btn-red { background: #dc2626; }    /* Instant Revoke (0-Byte Test) */
+    .btn-orange { background: #ea580c; } /* Async Gesture Expiry */
+    .btn-purple { background: #9333ea; } /* Detached DOM Anchor */
+    .btn-blue { background: #2563eb; }   /* Synthetic Dispatch Event */
 
-    /* LOG DIAGNOSTIK UNTUK DEV BROWSER */
-    .log-box {
-      background: #090a0d;
+    /* Terminal Monitor */
+    .terminal {
+      background: #040507;
       border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 8px;
       font-family: ui-monospace, monospace;
-      font-size: 11px;
-      color: #38bdf8;
-      line-height: 1.4;
-      min-height: 70px;
-      max-height: 140px;
-      overflow-y: auto;
-    }
-    .log-title {
       font-size: 10px;
-      color: #64748b;
-      text-transform: uppercase;
-      font-weight: bold;
-      margin-bottom: 4px;
+      color: #38bdf8;
+      height: 110px;
+      overflow-y: auto;
+      line-height: 1.4;
     }
-    iframe { width: 100%; height: 115px; border: none; margin-top: 6px; }
+    iframe { width: 100%; height: 75px; border: none; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- BLOK KARTU UI GAYA GEMINI DENGAN TOMBOL DOWNLOAD RESMI -->
-    <div class="gemini-code-card">
-      <div class="gemini-header">
-        <div class="lang-tag">
-          <span style="color:#38bdf8;">⚡</span> Raw Byte Engine Test
-        </div>
-        <div class="header-actions">
-          <!-- Tombol Salin -->
-          <button class="icon-btn" title="Salin Payload" onclick="copyBufferHex()">
-            <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          </button>
-          <!-- Tombol Unduh Langsung Persis Seperti di Gemini -->
-          <button class="icon-btn" title="Unduh Langsung dari Header" onclick="triggerDirectDownload()">
-            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-          </button>
-        </div>
+  <div class="card">
+    <div class="header">
+      <h1>🧪 Gemini / AI Studio Simulator</h1>
+      <span class="badge">Extreme Stress Suite</span>
+    </div>
+
+    <!-- PREVIEW BOX PERSIS GEMINI CHAT -->
+    <div class="gemini-box">
+      <div class="gemini-bar">
+        <span>plaintext (auto-generated)</span>
+        <button class="icon-btn" onclick="testGeminiExact()">⬇ Unduh Gaya Asli Gemini</button>
       </div>
-
-      <div class="code-preview" id="previewBox">// Memuat sampel payload mentah (ArrayBuffer / Octet-Stream)...</div>
-
-      <div class="controls">
-        <div class="grid-2">
-          <div>
-            <label>1. Sumber File Repo:</label>
-            <select id="repoFileSelect" onchange="loadCurrentFile()">
-              <option value="">🔄 Memindai...</option>
-            </select>
-          </div>
-          <div>
-            <label>2. Multiplier Beban:</label>
-            <select id="multiplier">
-              <option value="1">1x (Asli)</option>
-              <option value="10">10x Beban</option>
-              <option value="50" selected>50x (Stress Test)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div>
-            <label>3. Target Ekstensi / Format:</label>
-            <select id="extSelect">
-              <optgroup label="Biner & Executable">
-                <option value="bin|application/octet-stream" selected>.BIN (Raw Octet-Stream)</option>
-                <option value="apk|application/vnd.android.package-archive">.APK (Android Package)</option>
-                <option value="zip|application/zip">.ZIP (Compressed Archive)</option>
-              </optgroup>
-              <optgroup label="Dokumen & Data">
-                <option value="pdf|application/pdf">.PDF (Document)</option>
-                <option value="json|application/json">.JSON (Object Data)</option>
-                <option value="txt|text/plain">.TXT (Plain Text)</option>
-                <option value="csv|text/csv">.CSV (Spreadsheet)</option>
-              </optgroup>
-              <optgroup label="Tipe Media / Kode">
-                <option value="mp4|video/mp4">.MP4 (Video Media)</option>
-                <option value="png|image/png">.PNG (Raster Image)</option>
-                <option value="js|application/javascript">.JS (Executable Script)</option>
-              </optgroup>
-              <optgroup label="Edge Cases (Tanpa MIME Resmi)">
-                <option value="raw|">.RAW (MIME Kosong - Uji 0-Byte)</option>
-                <option value="custom|unknown/custom-stream">.CUSTOM (MIME Tidak Dikenal)</option>
-              </optgroup>
-            </select>
-          </div>
-          <div>
-            <label>4. Metode Alir Browser:</label>
-            <select id="transferMode">
-              <option value="blob-url">Blob URL (createObjectURL)</option>
-              <option value="raw-octet">Forced Octet-Stream</option>
-              <option value="data-uri">Data URI (Base64 Encode)</option>
-              <option value="stream">ReadableStream API</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="btn-exec" onclick="mountAndIsolate()">
-          ⚡ Siapkan ke Lapisan Sandboxed DOM
-        </button>
+      <div style="font-family: monospace; font-size: 10px; color: #a5b4fc;" id="txtPreview">
+        // Payload teks disiapkan: Memuat...
       </div>
     </div>
 
-    <!-- WADAH DOM TERISOLASI (Tempat Tombol Hijau / Kuning Berjalan) -->
-    <div style="background:#0d0f12; border: 1px dashed #334155; border-radius: 12px; padding: 6px;">
-      <iframe id="sandboxFrame" sandbox="allow-scripts allow-downloads"></iframe>
+    <div style="font-size: 11px; color: #94a3b8; font-weight: bold;">
+      Pilih Skenario Kegagalan Browser untuk Diuji:
     </div>
 
-    <!-- LOG MONITOR UNTUK DEBUGGING BROWSER -->
-    <div class="log-box">
-      <div class="log-title">📋 Diagnostic Log Browser Engine:</div>
-      <div id="logText">Menunggu penyiapan engine...</div>
+    <!-- 4 SKENARIO UTAMA PENYEBAB BROWSER KUSTOM CRASH/GAGAL -->
+    <div class="btn-grid">
+      <!-- Skenario 1 -->
+      <button class="btn-test btn-red" onclick="testInstantRevoke()">
+        1. Instant Revoke
+        <span>Tes Berkas 0-Byte (0ms Del)</span>
+      </button>
+
+      <!-- Skenario 2 -->
+      <button class="btn-test btn-orange" onclick="testAsyncExpiry()">
+        2. Async Gesture
+        <span>Hilang Transient Token</span>
+      </button>
+
+      <!-- Skenario 3 -->
+      <button class="btn-test btn-purple" onclick="testDetachedDOM()">
+        3. Detached Anchor
+        <span>Tanpa appendChild(a)</span>
+      </button>
+
+      <!-- Skenario 4 -->
+      <button class="btn-test btn-blue" onclick="testSyntheticEvent()">
+        4. Synthetic Event
+        <span>Dispatch MouseEvent</span>
+      </button>
+    </div>
+
+    <!-- FRAME SANDBOX DENGAN PENGETATAN DOM -->
+    <div style="background:#090d16; border: 1px dashed #334155; border-radius: 8px; padding: 4px;">
+      <iframe id="testFrame" sandbox="allow-scripts allow-downloads"></iframe>
+    </div>
+
+    <!-- LOG DIAGNOSTIK UNTUK PENGEMBANG BROWSER -->
+    <div class="terminal" id="termLog">
+      [READY] Menunggu pengujian skenario...
     </div>
   </div>
 
   <script>
-    let activeBuffer = null;
-    let activeFileName = "sample.bin";
+    let sampleText = "INI ADALAH DATA MENTAH DARI GOOGLE AI STUDIO / GEMINI.\n" +
+                     "Dibuat untuk menguji apakah browser mampu menangkap Blob secara instan.\n" +
+                     "Timestamp: " + new Date().toISOString();
+
+    document.getElementById('txtPreview').innerText = sampleText.substring(0, 95) + "...";
 
     function log(msg) {
-      const el = document.getElementById('logText');
-      el.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}<br>` + el.innerHTML;
+      const term = document.getElementById('termLog');
+      term.innerHTML = `> [${new Date().toLocaleTimeString()}] ${msg}<br>` + term.innerHTML;
     }
 
-    // 1. Auto scan repositori
-    async function initRepoScan() {
-      const sel = document.getElementById('repoFileSelect');
-      let owner = 'ary05171', repo = 'download-test-blob';
-      const hp = window.location.hostname.split('.');
-      if (hp.length >= 3 && hp[1] === 'github' && hp[2] === 'io') {
-        owner = hp[0];
-        const pp = window.location.pathname.split('/').filter(Boolean);
-        if (pp.length > 0) repo = pp[0];
-      }
-
-      try {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`);
-        const items = await res.json();
-        const files = items.filter(f => f.type === 'file' && f.name !== 'index.html');
-        sel.innerHTML = '';
-        files.forEach(f => {
-          const opt = document.createElement('option');
-          opt.value = f.name;
-          opt.textContent = `${f.name} (${(f.size/1024).toFixed(1)} KB)`;
-          sel.appendChild(opt);
-        });
-        loadCurrentFile();
-      } catch (e) {
-        sel.innerHTML = '<option value="area_config.json">area_config.json</option>';
-        loadCurrentFile();
-      }
-    }
-    initRepoScan();
-
-    // 2. Muat file ke memori (ArrayBuffer mentah)
-    async function loadCurrentFile() {
-      const filename = document.getElementById('repoFileSelect').value || 'area_config.json';
-      activeFileName = filename;
-      try {
-        log(`Mengambil byte mentah: ${filename}...`);
-        const res = await fetch('./' + filename);
-        activeBuffer = await res.arrayBuffer();
-        
-        // Buat representasi hex singkat untuk preview
-        const bytes = new Uint8Array(activeBuffer.slice(0, 48));
-        let hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
-        document.getElementById('previewBox').innerText = 
-          `// Byte Header (${bytes.length} bytes):\n[HEX]: ${hex} ...\n// Total Ukuran: ${activeBuffer.byteLength} Bytes (Raw Allocated)`;
-        log(`Buffer berhasil dimuat: ${activeBuffer.byteLength} Bytes.`);
-      } catch(e) {
-        log(`Gagal memuat buffer: ${e.message}`);
-      }
-    }
-
-    // 3. Tombol Salin
-    function copyBufferHex() {
-      if (!activeBuffer) return;
-      navigator.clipboard.writeText(document.getElementById('previewBox').innerText);
-      log(`Hex preview berhasil disalin ke clipboard.`);
-    }
-
-    // 4. Unduh Cepat dari Tombol Header Gemini
-    function triggerDirectDownload() {
-      if (!activeBuffer) {
-        alert("Buffer belum siap!");
-        return;
-      }
-      const [ext, mime] = document.getElementById('extSelect').value.split('|');
-      const blob = new Blob([activeBuffer], { type: mime || 'application/octet-stream' });
+    // SKENARIO ASLI GEMINI (Gabungan Instant Revoke + Plaintext Blob)
+    function testGeminiExact() {
+      log("⚡ Menjalankan alur persis Google Gemini...");
+      const blob = new Blob([sampleText], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = "gemini_raw_" + activeFileName.split('.')[0] + "." + ext;
+      a.download = "gemini_code_" + Date.now() + ".txt";
+      document.body.appendChild(a);
       a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 200);
-      log(`Trigger Header: Download dimulai -> .${ext} (${blob.size} bytes)`);
+      document.body.removeChild(a);
+      // Gemini langsung mencabut memori:
+      URL.revokeObjectURL(url);
+      log("⚠️ URL.revokeObjectURL langsung dipanggil 0ms! Cek apakah file 0-byte?");
     }
 
-    // 5. Injeksi Lapisan DOM dengan Multi-Metode Pengujian
-    function mountAndIsolate() {
-      if (!activeBuffer) return;
-      const iframe = document.getElementById('sandboxFrame');
-      const multiplier = parseInt(document.getElementById('multiplier').value, 10);
-      const [ext, mime] = document.getElementById('extSelect').value.split('|');
-      const mode = document.getElementById('transferMode').value;
-      const totalBytes = activeBuffer.byteLength * multiplier;
-
-      log(`Menginjeksi ke Sandboxed Iframe. Mode: ${mode}, Target: .${ext}`);
-
-      const frameCode = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { margin: 0; background: transparent; font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; height: 100vh; overflow: hidden; }
-          </style>
-        </head>
-        <body>
-          <div id="mount"></div>
-          <script>
-            window.addEventListener('message', (ev) => {
-              if (ev.data.type === 'EXEC') renderIsolated(ev.data);
-            });
-
-            function renderIsolated(data) {
-              const { buffer, ext, mime, mode, multiplier, filename, totalSize } = data;
-              const host = document.getElementById('mount');
-              const shadow = host.attachShadow({ mode: 'closed' });
-
-              const wrap = document.createElement('div');
-              wrap.innerHTML = \`
-                <style>
-                  .box { display: flex; flex-direction: column; gap: 6px; }
-                  .btn-dl {
-                    background: #10b981; color: #042f2e; border: none;
-                    height: 38px; border-radius: 8px; font-weight: 800;
-                    font-size: 13px; cursor: pointer; width: 100%;
-                  }
-                  .btn-dl:active { background: #059669; }
-                  .btn-batch {
-                    background: #f59e0b; color: #451a03; border: none;
-                    height: 38px; border-radius: 8px; font-weight: 800;
-                    font-size: 12px; cursor: pointer; width: 100%;
-                  }
-                  .btn-batch:active { background: #d97706; }
-                  .info { font-size: 10px; color: #94a3b8; text-align: center; font-family: monospace; }
-                </style>
-                <div class="box">
-                  <button class="btn-dl" id="dlBtn">💾 Unduh Raw Byte (.\${ext})</button>
-                  <button class="btn-batch" id="batchBtn">🔥 Uji Unduh Beruntun (Multi-MIME)</button>
-                  <div class="info">Buffer: \${(totalSize/1024).toFixed(1)} KB | Jalur: \${mode}</div>
-                </div>
-              \`;
-              shadow.appendChild(wrap);
-
-              async function createPayload(targetMime) {
-                let chunks = [];
-                for(let i=0; i<multiplier; i++) chunks.push(new Uint8Array(buffer));
-                
-                if (mode === 'data-uri') {
-                  // Konversi ke base64 data-uri untuk tes browser yang gagal Blob URL
-                  let binary = '';
-                  let bytes = new Uint8Array(buffer);
-                  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-                  return "data:" + (targetMime || "application/octet-stream") + ";base64," + btoa(binary);
-                } else {
-                  // Standard Blob & Forced Octet
-                  const actualMime = (mode === 'raw-octet') ? 'application/octet-stream' : targetMime;
-                  const blob = new Blob(chunks, { type: actualMime });
-                  return URL.createObjectURL(blob);
-                }
-              }
-
-              function dispatch(url, targetExt) {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = "browser_test_" + Date.now() + "." + targetExt;
-                a.click();
-                if (url.startsWith('blob:')) {
-                  setTimeout(() => URL.revokeObjectURL(url), 400);
-                }
-              }
-
-              shadow.getElementById('dlBtn').addEventListener('click', async () => {
-                const payloadUrl = await createPayload(mime);
-                dispatch(payloadUrl, ext);
-                window.parent.postMessage({ type: 'LOG', msg: 'Eksekusi single download berhasil dipicu.' }, '*');
-              });
-
-              shadow.getElementById('batchBtn').addEventListener('click', async () => {
-                const testList = [
-                  { e: 'bin', m: 'application/octet-stream' },
-                  { e: 'apk', m: 'application/vnd.android.package-archive' },
-                  { e: 'pdf', m: 'application/pdf' },
-                  { e: 'dat', m: '' }
-                ];
-                for(let item of testList) {
-                  const url = await createPayload(item.m);
-                  dispatch(url, item.e);
-                  await new Promise(r => setTimeout(r, 300));
-                }
-                window.parent.postMessage({ type: 'LOG', msg: 'Batch unduhan multi-ekstensi selesai.' }, '*');
-              });
-            }
-          <\/script>
-        </body>
-        </html>
-      `;
-
-      iframe.srcdoc = frameCode;
-      iframe.onload = () => {
-        iframe.contentWindow.postMessage({
-          type: 'EXEC',
-          buffer: activeBuffer,
-          ext,
-          mime,
-          mode,
-          multiplier,
-          filename: activeFileName,
-          totalSize: totalBytes
-        }, '*');
-      };
+    // 1. UJI INSTANT REVOKE (Penyebab berkas 0-byte di WebView)
+    function testInstantRevoke() {
+      log("🔴 UJI 1: Instant Revoke dipicu.");
+      const blob = new Blob([sampleText], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "test_0byte_check.bin";
+      a.click();
+      URL.revokeObjectURL(url); // Langsung hangus!
+      log("🚨 Jika browser Anda mengunduh 0-byte, berarti engine Anda terlambat membaca memori.");
     }
 
-    window.addEventListener('message', (ev) => {
-      if (ev.data.type === 'LOG') log(ev.data.msg);
-    });
+    // 2. UJI ASYNC GESTURE EXPIRY
+    async function testAsyncExpiry() {
+      log("🟠 UJI 2: Menunggu Promise 300ms (Simulasi parsing Gemini)...");
+      await new Promise(r => setTimeout(r, 300)); // Delay menghilangkan User-Gesture
+      const blob = new Blob([sampleText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "test_async_token.txt";
+      a.click();
+      log("⚠️ Download dipicu setelah async. Cek apakah WebView memblokirnya!");
+    }
+
+    // 3. UJI DETACHED ANCHOR
+    function testDetachedDOM() {
+      log("🟣 UJI 3: Memicu klik pada tag <a> yang TIDAK ditempel ke DOM.");
+      const blob = new Blob([sampleText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "test_detached_node.txt";
+      // TIDAK ADA document.body.appendChild(a)
+      a.click();
+      log("⚠️ a.click() dipanggil tanpa berada di dalam hirarki DOM.");
+    }
+
+    // 4. UJI SYNTHETIC MOUSE EVENT
+    function testSyntheticEvent() {
+      log("🔵 UJI 4: Memicu via dispatchEvent(new MouseEvent('click')).");
+      const blob = new Blob([sampleText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "test_synthetic_event.txt";
+      const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+      a.dispatchEvent(evt);
+      log("⚠️ Event sintetik ditembakkan.");
+    }
   </script>
 </body>
 </html>
