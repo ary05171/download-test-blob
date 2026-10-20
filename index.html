@@ -3,241 +3,263 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DOM Stress-Tester</title>
+  <title>Browser Blob Engine Tester</title>
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #090d16;
+      background: #000000;
       color: #f1f5f9;
-      min-height: 100dvh; /* Mengikuti tinggi layar HP sebenarnya */
+      min-height: 100dvh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 8px;
+      padding: 12px;
     }
-    .card {
-      background: #131d31;
+    .container {
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* KARTU GAYA GEMINI CHAT CODE-BLOCK */
+    .gemini-code-card {
+      background: #0d0f12;
+      border: 1px solid #23272f;
       border-radius: 16px;
-      border: 1px solid #1e293b;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      padding: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .gemini-header {
+      background: #16191f;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #23272f;
+    }
+    .lang-tag {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover, .icon-btn:active {
+      background: #23272f;
+      color: #38bdf8;
+    }
+    .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* PREVIEW KONTEN */
+    .code-preview {
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      color: #a5b4fc;
+      max-height: 90px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      background: #090a0d;
+      border-bottom: 1px solid #1c2029;
+    }
+
+    /* KONTROL PENGUJIAN */
+    .controls {
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 8px;
-    }
-    h1 {
-      font-size: 16px;
-      color: #38bdf8;
-      font-weight: 700;
-    }
-    .badge {
-      font-size: 10px;
-      background: #1e293b;
-      color: #94a3b8;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #94a3b8;
-    }
-    select, input[type="file"] {
-      width: 100%;
-      height: 40px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: #090d16;
-      border: 1px solid #334155;
-      color: #fff;
-      font-size: 13px;
-    }
-    /* Grid 2 Kolom untuk Menghemat Ruang Layar */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
-    .source-tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 4px;
-    }
-    .src-btn {
-      flex: 1;
-      height: 28px;
-      background: #090d16;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      border-radius: 6px;
+    label {
       font-size: 11px;
       font-weight: 600;
-      cursor: pointer;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      display: block;
     }
-    .src-btn.active {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #38bdf8;
+    select {
+      width: 100%;
+      height: 38px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #16191f;
+      border: 1px solid #2d333f;
+      color: #fff;
+      font-size: 12px;
     }
-    .btn-prepare {
+    .btn-exec {
       background: #2563eb;
       color: white;
       border: none;
-      height: 44px;
-      border-radius: 10px;
-      font-size: 14px;
+      height: 42px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: background 0.2s;
     }
-    .btn-prepare:active { background: #1d4ed8; }
-    #metrics {
-      font-family: ui-monospace, SFMono-Regular, monospace;
+    .btn-exec:active { background: #1d4ed8; }
+
+    /* LOG DIAGNOSTIK UNTUK DEV BROWSER */
+    .log-box {
+      background: #090a0d;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: ui-monospace, monospace;
       font-size: 11px;
       color: #38bdf8;
-      background: #090d16;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #1e293b;
       line-height: 1.4;
-      min-height: 38px;
+      min-height: 70px;
+      max-height: 140px;
+      overflow-y: auto;
     }
-    /* Kotak Frame Sandboxed */
-    #sandbox-wrapper {
-      border: 1.5px dashed #334155;
-      border-radius: 10px;
-      padding: 6px;
-      background: #06090f;
-      height: 125px;
+    .log-title {
+      font-size: 10px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 4px;
     }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    iframe { width: 100%; height: 115px; border: none; margin-top: 6px; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <div class="header">
-      <h1>⚡ DOM Stress-Tester</h1>
-      <span class="badge">1-Screen All-in-One</span>
+  <div class="container">
+    <!-- BLOK KARTU UI GAYA GEMINI DENGAN TOMBOL DOWNLOAD RESMI -->
+    <div class="gemini-code-card">
+      <div class="gemini-header">
+        <div class="lang-tag">
+          <span style="color:#38bdf8;">⚡</span> Raw Byte Engine Test
+        </div>
+        <div class="header-actions">
+          <!-- Tombol Salin -->
+          <button class="icon-btn" title="Salin Payload" onclick="copyBufferHex()">
+            <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          </button>
+          <!-- Tombol Unduh Langsung Persis Seperti di Gemini -->
+          <button class="icon-btn" title="Unduh Langsung dari Header" onclick="triggerDirectDownload()">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="code-preview" id="previewBox">// Memuat sampel payload mentah (ArrayBuffer / Octet-Stream)...</div>
+
+      <div class="controls">
+        <div class="grid-2">
+          <div>
+            <label>1. Sumber File Repo:</label>
+            <select id="repoFileSelect" onchange="loadCurrentFile()">
+              <option value="">🔄 Memindai...</option>
+            </select>
+          </div>
+          <div>
+            <label>2. Multiplier Beban:</label>
+            <select id="multiplier">
+              <option value="1">1x (Asli)</option>
+              <option value="10">10x Beban</option>
+              <option value="50" selected>50x (Stress Test)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>3. Target Ekstensi / Format:</label>
+            <select id="extSelect">
+              <optgroup label="Biner & Executable">
+                <option value="bin|application/octet-stream" selected>.BIN (Raw Octet-Stream)</option>
+                <option value="apk|application/vnd.android.package-archive">.APK (Android Package)</option>
+                <option value="zip|application/zip">.ZIP (Compressed Archive)</option>
+              </optgroup>
+              <optgroup label="Dokumen & Data">
+                <option value="pdf|application/pdf">.PDF (Document)</option>
+                <option value="json|application/json">.JSON (Object Data)</option>
+                <option value="txt|text/plain">.TXT (Plain Text)</option>
+                <option value="csv|text/csv">.CSV (Spreadsheet)</option>
+              </optgroup>
+              <optgroup label="Tipe Media / Kode">
+                <option value="mp4|video/mp4">.MP4 (Video Media)</option>
+                <option value="png|image/png">.PNG (Raster Image)</option>
+                <option value="js|application/javascript">.JS (Executable Script)</option>
+              </optgroup>
+              <optgroup label="Edge Cases (Tanpa MIME Resmi)">
+                <option value="raw|">.RAW (MIME Kosong - Uji 0-Byte)</option>
+                <option value="custom|unknown/custom-stream">.CUSTOM (MIME Tidak Dikenal)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label>4. Metode Alir Browser:</label>
+            <select id="transferMode">
+              <option value="blob-url">Blob URL (createObjectURL)</option>
+              <option value="raw-octet">Forced Octet-Stream</option>
+              <option value="data-uri">Data URI (Base64 Encode)</option>
+              <option value="stream">ReadableStream API</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-exec" onclick="mountAndIsolate()">
+          ⚡ Siapkan ke Lapisan Sandboxed DOM
+        </button>
+      </div>
     </div>
 
-    <!-- 1. Sumber File -->
-    <div class="field">
-      <div class="source-tabs">
-        <button class="src-btn active" id="btnRepo" onclick="setSource('repo')">📁 Auto Repo</button>
-        <button class="src-btn" id="btnManual" onclick="setSource('manual')">📤 Upload HP</button>
-      </div>
-      <div id="repoBox">
-        <select id="repoFileSelect">
-          <option value="">🔄 Memindai repo...</option>
-        </select>
-      </div>
-      <div id="uploadBox" style="display: none;">
-        <input type="file" id="localFile">
-      </div>
-    </div>
-
-    <!-- 2. Grid Format & Multiplier (Berdampingan) -->
-    <div class="grid-2">
-      <div class="field">
-        <label>Format Target:</label>
-        <select id="mimeSelect">
-          <option value="txt|text/plain">.TXT (Plain)</option>
-          <option value="js|application/javascript">.JS (Script)</option>
-          <option value="json|application/json">.JSON (Data)</option>
-          <option value="html|text/html">.HTML (Doc)</option>
-          <option value="bin|application/octet-stream">.BIN (Binary)</option>
-          <option value="wasm|application/wasm">.WASM</option>
-          <option value="dat|">.DAT (No MIME)</option>
-          <option value="custom|application/x-custom" selected>.CUSTOM</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>Multiplier Beban:</label>
-        <select id="multiplier">
-          <option value="1">1x (Asli)</option>
-          <option value="10">10x Beban</option>
-          <option value="50" selected>50x (Tinggi)</option>
-          <option value="100">100x (Ekstrem)</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- 3. Tingkat Keamanan -->
-    <div class="field">
-      <label>Mode Keamanan:</label>
-      <select id="secLevel">
-        <option value="standard">🟢 Standar (Open DOM)</option>
-        <option value="strict">🟡 Ketat (Closed DOM + RAM Flush)</option>
-        <option value="super-strict" selected>🔴 Super Ketat (CSP Lockdown + SHA-256)</option>
-      </select>
-    </div>
-
-    <!-- Tombol Utama untuk Memasang Tombol Unduh -->
-    <button class="btn-prepare" id="btnPrepare" onclick="prepareDOM()">
-      ⚡ Siapkan ke Lapisan DOM
-    </button>
-
-    <div id="metrics">Pilih file lalu klik "Siapkan ke Lapisan DOM".</div>
-
-    <!-- Area Lapisan Sandboxed (Tombol Unduh Muncul Di Sini) -->
-    <div id="sandbox-wrapper">
+    <!-- WADAH DOM TERISOLASI (Tempat Tombol Hijau / Kuning Berjalan) -->
+    <div style="background:#0d0f12; border: 1px dashed #334155; border-radius: 12px; padding: 6px;">
       <iframe id="sandboxFrame" sandbox="allow-scripts allow-downloads"></iframe>
+    </div>
+
+    <!-- LOG MONITOR UNTUK DEBUGGING BROWSER -->
+    <div class="log-box">
+      <div class="log-title">📋 Diagnostic Log Browser Engine:</div>
+      <div id="logText">Menunggu penyiapan engine...</div>
     </div>
   </div>
 
   <script>
-    let currentSource = 'repo';
-    const ALL_FORMATS = [
-      { ext: 'txt', mime: 'text/plain' },
-      { ext: 'js', mime: 'application/javascript' },
-      { ext: 'json', mime: 'application/json' },
-      { ext: 'html', mime: 'text/html' },
-      { ext: 'bin', mime: 'application/octet-stream' },
-      { ext: 'wasm', mime: 'application/wasm' },
-      { ext: 'dat', mime: '' },
-      { ext: 'custom', mime: 'application/x-custom' }
-    ];
+    let activeBuffer = null;
+    let activeFileName = "sample.bin";
 
-    function setSource(src) {
-      currentSource = src;
-      document.getElementById('btnRepo').classList.toggle('active', src === 'repo');
-      document.getElementById('btnManual').classList.toggle('active', src === 'manual');
-      document.getElementById('repoBox').style.display = src === 'repo' ? 'block' : 'none';
-      document.getElementById('uploadBox').style.display = src === 'manual' ? 'block' : 'none';
+    function log(msg) {
+      const el = document.getElementById('logText');
+      el.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}<br>` + el.innerHTML;
     }
 
-    // Auto-scan file dari repo GitHub
-    async function scanRepo() {
+    // 1. Auto scan repositori
+    async function initRepoScan() {
       const sel = document.getElementById('repoFileSelect');
       let owner = 'ary05171', repo = 'download-test-blob';
       const hp = window.location.hostname.split('.');
@@ -249,170 +271,172 @@
 
       try {
         const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`);
-        if (!res.ok) throw new Error();
-        const files = (await res.json()).filter(f => f.type === 'file' && f.name !== 'index.html');
+        const items = await res.json();
+        const files = items.filter(f => f.type === 'file' && f.name !== 'index.html');
         sel.innerHTML = '';
         files.forEach(f => {
           const opt = document.createElement('option');
           opt.value = f.name;
-          opt.textContent = `📄 ${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+          opt.textContent = `${f.name} (${(f.size/1024).toFixed(1)} KB)`;
           sel.appendChild(opt);
         });
+        loadCurrentFile();
       } catch (e) {
-        sel.innerHTML = '<option value="area_config.json">📄 area_config.json</option>';
+        sel.innerHTML = '<option value="area_config.json">area_config.json</option>';
+        loadCurrentFile();
       }
     }
-    scanRepo();
+    initRepoScan();
 
-    async function getSHA256(buf) {
-      const h = await crypto.subtle.digest('SHA-256', buf);
-      return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
+    // 2. Muat file ke memori (ArrayBuffer mentah)
+    async function loadCurrentFile() {
+      const filename = document.getElementById('repoFileSelect').value || 'area_config.json';
+      activeFileName = filename;
+      try {
+        log(`Mengambil byte mentah: ${filename}...`);
+        const res = await fetch('./' + filename);
+        activeBuffer = await res.arrayBuffer();
+        
+        // Buat representasi hex singkat untuk preview
+        const bytes = new Uint8Array(activeBuffer.slice(0, 48));
+        let hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
+        document.getElementById('previewBox').innerText = 
+          `// Byte Header (${bytes.length} bytes):\n[HEX]: ${hex} ...\n// Total Ukuran: ${activeBuffer.byteLength} Bytes (Raw Allocated)`;
+        log(`Buffer berhasil dimuat: ${activeBuffer.byteLength} Bytes.`);
+      } catch(e) {
+        log(`Gagal memuat buffer: ${e.message}`);
+      }
     }
 
-    // Eksekusi Pemasangan ke DOM Iframe
-    async function prepareDOM() {
-      const metrics = document.getElementById('metrics');
-      const iframe = document.getElementById('sandboxFrame');
-      metrics.innerHTML = `⏳ Mengambil file & menyiapkan buffer...`;
+    // 3. Tombol Salin
+    function copyBufferHex() {
+      if (!activeBuffer) return;
+      navigator.clipboard.writeText(document.getElementById('previewBox').innerText);
+      log(`Hex preview berhasil disalin ke clipboard.`);
+    }
 
-      let arrayBuffer, baseName = "";
-      try {
-        if (currentSource === 'repo') {
-          baseName = document.getElementById('repoFileSelect').value || 'area_config.json';
-          const r = await fetch('./' + baseName);
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          arrayBuffer = await r.arrayBuffer();
-        } else {
-          const f = document.getElementById('localFile').files[0];
-          if (!f) throw new Error("Pilih file lokal terlebih dahulu!");
-          baseName = f.name;
-          arrayBuffer = await f.arrayBuffer();
-        }
-      } catch (err) {
-        metrics.innerHTML = `❌ Error: ${err.message}`;
+    // 4. Unduh Cepat dari Tombol Header Gemini
+    function triggerDirectDownload() {
+      if (!activeBuffer) {
+        alert("Buffer belum siap!");
         return;
       }
+      const [ext, mime] = document.getElementById('extSelect').value.split('|');
+      const blob = new Blob([activeBuffer], { type: mime || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "gemini_raw_" + activeFileName.split('.')[0] + "." + ext;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 200);
+      log(`Trigger Header: Download dimulai -> .${ext} (${blob.size} bytes)`);
+    }
 
+    // 5. Injeksi Lapisan DOM dengan Multi-Metode Pengujian
+    function mountAndIsolate() {
+      if (!activeBuffer) return;
+      const iframe = document.getElementById('sandboxFrame');
       const multiplier = parseInt(document.getElementById('multiplier').value, 10);
-      const secLevel = document.getElementById('secLevel').value;
-      const [selExt, selMime] = document.getElementById('mimeSelect').value.split('|');
-      const totalBytes = arrayBuffer.byteLength * multiplier;
+      const [ext, mime] = document.getElementById('extSelect').value.split('|');
+      const mode = document.getElementById('transferMode').value;
+      const totalBytes = activeBuffer.byteLength * multiplier;
 
-      let hash = "N/A";
-      if (secLevel === 'super-strict') {
-        metrics.innerHTML = `🔐 Mengkalkulasi Checksum SHA-256...`;
-        hash = await getSHA256(arrayBuffer);
-      }
+      log(`Menginjeksi ke Sandboxed Iframe. Mode: ${mode}, Target: .${ext}`);
 
-      const csp = (secLevel === 'super-strict')
-        ? `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; blob:;">`
-        : ``;
-
-      const shadowMode = (secLevel === 'standard') ? 'open' : 'closed';
-
-      // HTML di dalam Iframe (Tombol Unduh Hijau & Kuning)
-      const frameHTML = `
+      const frameCode = `
         <!DOCTYPE html>
         <html>
         <head>
-          ${csp}
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body { margin: 0; background: transparent; font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; height: 100vh; overflow: hidden; }
           </style>
         </head>
         <body>
-          <div id="mount-point"></div>
+          <div id="mount"></div>
           <script>
             window.addEventListener('message', (ev) => {
-              if (ev.data.type === 'START') initIsolatedDOM(ev.data);
+              if (ev.data.type === 'EXEC') renderIsolated(ev.data);
             });
 
-            function initIsolatedDOM(data) {
-              const { buffer, baseName, multiplier, totalSize, secLevel, selExt, selMime, allFormats } = data;
-              const host = document.getElementById('mount-point');
-              const shadow = host.attachShadow({ mode: '${shadowMode}' });
+            function renderIsolated(data) {
+              const { buffer, ext, mime, mode, multiplier, filename, totalSize } = data;
+              const host = document.getElementById('mount');
+              const shadow = host.attachShadow({ mode: 'closed' });
 
               const wrap = document.createElement('div');
               wrap.innerHTML = \`
                 <style>
                   .box { display: flex; flex-direction: column; gap: 6px; }
-                  .btn-run {
+                  .btn-dl {
                     background: #10b981; color: #042f2e; border: none;
                     height: 38px; border-radius: 8px; font-weight: 800;
                     font-size: 13px; cursor: pointer; width: 100%;
                   }
-                  .btn-run:active { background: #059669; }
+                  .btn-dl:active { background: #059669; }
                   .btn-batch {
                     background: #f59e0b; color: #451a03; border: none;
                     height: 38px; border-radius: 8px; font-weight: 800;
                     font-size: 12px; cursor: pointer; width: 100%;
                   }
                   .btn-batch:active { background: #d97706; }
-                  .status-lbl { font-size: 10px; color: #94a3b8; text-align: center; font-family: monospace; }
+                  .info { font-size: 10px; color: #94a3b8; text-align: center; font-family: monospace; }
                 </style>
                 <div class="box">
-                  <button class="btn-run" id="btnSingle">💾 Unduh Satuan (.\${selExt})</button>
-                  <button class="btn-batch" id="btnBatch">🔥 Unduh Semua Format (Batch)</button>
-                  <div class="status-lbl" id="statusLbl">Buffer Siap: \${(totalSize/(1024*1024)).toFixed(2)} MB</div>
+                  <button class="btn-dl" id="dlBtn">💾 Unduh Raw Byte (.\${ext})</button>
+                  <button class="btn-batch" id="batchBtn">🔥 Uji Unduh Beruntun (Multi-MIME)</button>
+                  <div class="info">Buffer: \${(totalSize/1024).toFixed(1)} KB | Jalur: \${mode}</div>
                 </div>
               \`;
               shadow.appendChild(wrap);
 
-              const statusLbl = shadow.getElementById('statusLbl');
-
-              function buildStreamBlob(mime) {
-                let count = 0;
-                const stream = new ReadableStream({
-                  start(controller) {
-                    function push() {
-                      if (count < multiplier) {
-                        controller.enqueue(new Uint8Array(buffer));
-                        count++;
-                        push();
-                      } else {
-                        controller.close();
-                      }
-                    }
-                    push();
-                  }
-                });
-                return new Response(stream).blob();
+              async function createPayload(targetMime) {
+                let chunks = [];
+                for(let i=0; i<multiplier; i++) chunks.push(new Uint8Array(buffer));
+                
+                if (mode === 'data-uri') {
+                  // Konversi ke base64 data-uri untuk tes browser yang gagal Blob URL
+                  let binary = '';
+                  let bytes = new Uint8Array(buffer);
+                  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+                  return "data:" + (targetMime || "application/octet-stream") + ";base64," + btoa(binary);
+                } else {
+                  // Standard Blob & Forced Octet
+                  const actualMime = (mode === 'raw-octet') ? 'application/octet-stream' : targetMime;
+                  const blob = new Blob(chunks, { type: actualMime });
+                  return URL.createObjectURL(blob);
+                }
               }
 
-              function triggerDownload(blob, filename) {
-                const url = URL.createObjectURL(blob);
+              function dispatch(url, targetExt) {
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = filename;
+                a.download = "browser_test_" + Date.now() + "." + targetExt;
                 a.click();
-                setTimeout(() => URL.revokeObjectURL(url), 100);
+                if (url.startsWith('blob:')) {
+                  setTimeout(() => URL.revokeObjectURL(url), 400);
+                }
               }
 
-              // Unduh Satuan
-              shadow.getElementById('btnSingle').addEventListener('click', async () => {
-                const t0 = performance.now();
-                statusLbl.innerText = "Streaming...";
-                const blob = await buildStreamBlob(selMime);
-                triggerDownload(blob, "test_" + baseName + "." + selExt);
-                const dur = ((performance.now() - t0)/1000).toFixed(2);
-                statusLbl.innerText = \`Selesai: \${dur}s\`;
-                window.parent.postMessage({ type: 'DONE', count: 1, dur }, '*');
+              shadow.getElementById('dlBtn').addEventListener('click', async () => {
+                const payloadUrl = await createPayload(mime);
+                dispatch(payloadUrl, ext);
+                window.parent.postMessage({ type: 'LOG', msg: 'Eksekusi single download berhasil dipicu.' }, '*');
               });
 
-              // Batch Unduh Seluruh Ekstensi
-              shadow.getElementById('btnBatch').addEventListener('click', async () => {
-                const t0 = performance.now();
-                for (let i = 0; i < allFormats.length; i++) {
-                  const fmt = allFormats[i];
-                  statusLbl.innerText = \`Unduh [\${i+1}/\${allFormats.length}]: .\${fmt.ext}\`;
-                  const blob = await buildStreamBlob(fmt.mime);
-                  triggerDownload(blob, "batch_" + i + "_" + baseName + "." + fmt.ext);
-                  await new Promise(r => setTimeout(r, 220));
+              shadow.getElementById('batchBtn').addEventListener('click', async () => {
+                const testList = [
+                  { e: 'bin', m: 'application/octet-stream' },
+                  { e: 'apk', m: 'application/vnd.android.package-archive' },
+                  { e: 'pdf', m: 'application/pdf' },
+                  { e: 'dat', m: '' }
+                ];
+                for(let item of testList) {
+                  const url = await createPayload(item.m);
+                  dispatch(url, item.e);
+                  await new Promise(r => setTimeout(r, 300));
                 }
-                const dur = ((performance.now() - t0)/1000).toFixed(2);
-                statusLbl.innerText = \`Batch Berhasil: \${dur}s\`;
-                window.parent.postMessage({ type: 'DONE', count: allFormats.length, dur }, '*');
+                window.parent.postMessage({ type: 'LOG', msg: 'Batch unduhan multi-ekstensi selesai.' }, '*');
               });
             }
           <\/script>
@@ -420,32 +444,23 @@
         </html>
       `;
 
-      iframe.srcdoc = frameHTML;
+      iframe.srcdoc = frameCode;
       iframe.onload = () => {
         iframe.contentWindow.postMessage({
-          type: 'START',
-          buffer: arrayBuffer,
-          baseName,
+          type: 'EXEC',
+          buffer: activeBuffer,
+          ext,
+          mime,
+          mode,
           multiplier,
-          totalSize: totalBytes,
-          secLevel,
-          selExt,
-          selMime,
-          allFormats: ALL_FORMATS
+          filename: activeFileName,
+          totalSize: totalBytes
         }, '*');
-
-        metrics.innerHTML = `✅ <b>DOM Siap:</b> <code>${baseName}</code> (~${(totalBytes/(1024*1024)).toFixed(2)} MB)<br>` +
-          `• Format: <b>.${selExt}</b> | Mode: <b>${secLevel.toUpperCase()}</b>`;
       };
     }
 
     window.addEventListener('message', (ev) => {
-      if (ev.data.type === 'DONE') {
-        const metrics = document.getElementById('metrics');
-        metrics.innerHTML = `🏁 <b>Hasil Pengujian:</b><br>` +
-          `• File Terunduh: <b>${ev.data.count} File</b><br>` +
-          `• Total Waktu: <b>${ev.data.dur} detik</b>`;
-      }
+      if (ev.data.type === 'LOG') log(ev.data.msg);
     });
   </script>
 </body>
